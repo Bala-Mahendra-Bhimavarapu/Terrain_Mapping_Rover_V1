@@ -59,6 +59,16 @@ colcon build --packages-select rover_msgs --symlink-install
 **Lines of Code:** 430  
 **Dependencies:** rclcpp, nav_msgs, serial communication  
 
+**CRITICAL: Serial Bridge must be running FIRST!**
+
+**Serial Bridge Startup (Terminal 1):**
+```bash
+ros2 run rosserial_python serial_node.py _port:=/dev/ttyACM0 _baud:=115200
+# Wait for: [INFO] ROS Serial Client initialized
+```
+
+**Packages Required:** 4 drivers
+
 **Build:**
 ```bash
 colcon build --packages-select vex_driver_node --symlink-install
