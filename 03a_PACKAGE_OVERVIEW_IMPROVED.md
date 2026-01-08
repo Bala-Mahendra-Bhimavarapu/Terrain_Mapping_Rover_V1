@@ -59,6 +59,13 @@ colcon build --packages-select rover_msgs --symlink-install
 **Lines of Code:** 430  
 **Dependencies:** rclcpp, nav_msgs, serial communication  
 
+**Build:**
+```bash
+colcon build --packages-select vex_driver_node --symlink-install
+```
+
+**Test:**
+
 **CRITICAL: Serial Bridge must be running FIRST!**
 
 **Serial Bridge Startup (Terminal 1):**
@@ -69,12 +76,6 @@ ros2 run rosserial_python serial_node.py _port:=/dev/ttyACM0 _baud:=115200
 
 **Packages Required:** 4 drivers
 
-**Build:**
-```bash
-colcon build --packages-select vex_driver_node --symlink-install
-```
-
-**Test:**
 ```bash
 ros2 run vex_driver_node vex_driver_node
 ros2 topic echo /vex/odom_raw  # Should see encoder readings
