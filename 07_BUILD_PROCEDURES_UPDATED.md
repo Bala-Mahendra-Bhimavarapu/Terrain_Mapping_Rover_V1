@@ -46,6 +46,241 @@ git --version
 
 ---
 
+## 🚀 STEP 0A: Prepare V5 Brain & Install PROS CLI
+
+### Prerequisites
+- VEX V5 Robot Brain (connected via USB)
+- Computer with Python 3.7+
+- Internet connection
+
+### Installation
+
+```bash
+# 1. Install PROS CLI
+pip3 install pros-cli
+
+# 2. Verify installation
+pros --version
+# Should show: PROS CLI v5.x.x
+
+# 3. Download PROS IDE (optional but recommended)
+# VS Code → Extensions → Search "PROS"
+# Install the official PROS extension
+
+# 4. Connect V5 Brain via USB
+# - Plug Micro-USB into V5 Brain back panel
+# - Plug other end into computer USB port
+# - Brain should appear in file manager
+
+# 5. Verify connection
+ls /dev/ttyACM*
+# Should show: /dev/ttyACM0 (or similar)
+
+# 6. Check V5 Brain firmware
+pros info
+# Should show: V5 target detected
+
+# 7. Update firmware if needed
+pros conduct upgrade
+# Follow on-screen prompts
+
+echo "[STEP 0A] ✅ PROS CLI installed and V5 Brain connected"
+```
+
+### Troubleshooting
+```bash
+# If PROS not found after pip install
+# Add to PATH:
+export PATH="$HOME/.local/bin:$PATH"
+
+# If V5 doesn't appear as /dev/ttyACM0
+# Restart the brain and reconnect
+
+# If permission denied on /dev/ttyACM0
+sudo usermod -a -G dialout $USER
+# Log out and back in
+```
+
+---
+
+## 🔧 STEP 0B: Create PROS Project & Add rosserial
+
+### Create New Project
+
+```bash
+# 1. Create PROS project
+cd ~/
+pros conduct new-project vex_ros_brain
+cd vex_ros_brain
+
+# 2. Verify project structure
+ls -la
+# Should show:
+# include/
+# src/
+# project.yaml
+# Makefile
+
+# 3. Select V5 as target
+pros target select v5
+# When prompted, choose "V5"
+
+# 4. Set project name in project.yaml
+cat project.yaml
+# Should have: target: v5
+
+# 5. Create main.cpp if not present
+# (Usually auto-created by PROS)
+
+echo "[STEP 0B Part 1] ✅ PROS project created"
+```
+
+### Add rosserial Library
+
+```bash
+# 1. Fetch rosserial library for VEX V5
+pros c fetch rosserial_vex_v5
+
+# 2. Apply library to project
+pros c apply rosserial_vex_v5
+
+# 3. Verify library installed
+ls -la include/
+# Should include rosserial headers
+
+# 4. Build to verify everything works
+pros build
+# Should complete without errors
+
+echo "[STEP 0B Part 2] ✅ rosserial library added"
+```
+
+---
+
+## 📝 STEP 0C: Copy PROS Code & Upload to V5 Brain
+
+### Copy Source Files
+
+```bash
+# 1. From 02_VEX_DRIVER_WITH_PROS_CODE.md, copy src/robot.cpp
+# Location: ~/vex_ros_brain/src/robot.cpp
+
+# 2. From same file, copy include/robot-config.h
+# Location: ~/vex_ros_brain/include/robot-config.h
+
+# 3. Verify files exist
+ls -la src/robot.cpp
+ls -la include/robot-config.h
+# Both should show green checkmarks
+
+# 4. Verify file content has motor definitions
+grep "motor_FL" include/robot-config.h
+# Should show: extern pros::Motor motor_FL;
+
+echo "[STEP 0C Part 1] ✅ Source files copied"
+```
+
+### Build PROS Project
+
+```bash
+# 1. Build the project
+pros build
+# Should show:
+# [INFO] Linking project
+# [INFO] Build completed successfully
+
+# 2. Check build output
+ls -la bin/
+# Should have: output.elf, output.bin, etc.
+
+# 3. If build fails, check errors
+# Most common: Missing includes or library issues
+# Solution: Verify robot-config.h and src/robot.cpp copied correctly
+
+echo "[STEP 0C Part 2] ✅ Project built successfully"
+```
+
+### Upload to V5 Brain
+
+```bash
+# 1. Ensure V5 Brain connected via USB
+ls -la /dev/ttyACM0
+
+# 2. Upload firmware
+pros upload
+# Will prompt: "Select target device"
+# Choose: V5 Brain (should auto-detect)
+
+# 3. Wait for upload to complete
+# Should show: [INFO] Upload complete
+
+# 4. V5 Brain screen will show loading bar
+# Wait until complete (30-60 seconds)
+
+# 5. Brain will reboot - wait 10 seconds
+
+echo "[STEP 0C Part 3] ✅ Firmware uploaded to V5 Brain"
+```
+
+---
+
+## ✅ STEP 0D: Test V5 Brain Serial Connection & Encoders
+
+### Monitor V5 Brain Console
+
+```bash
+# 1. Open serial terminal to V5 Brain
+pros terminal
+
+# 2. You should see:
+# [STARTUP] VEX V5 Brain initializing...
+# [INIT] Motors initialized and encoders reset
+# [ROS] Initialized - waiting for connection...
+
+# 3. Verify motors are detected
+# Check that ports 1-4 show motors
+
+# 4. Test encoder reading (manual test)
+# Manually spin each wheel by hand
+# Watch console for changing tick values
+
+# 5. Verify 100 Hz publishing
+# Count messages per second
+# Should see ~100 messages/sec when ready
+
+# 6. Exit terminal: Ctrl+C
+
+echo "[STEP 0D Part 1] ✅ V5 Brain console verified"
+```
+
+### Test USB Serial Connection
+
+```bash
+# 1. Check device file exists
+ls -la /dev/ttyACM0
+# Should show: crw-rw-rw- (or similar)
+
+# 2. Test serial communication
+# Install screen (if not available)
+sudo apt-get install screen
+
+# 3. Connect to V5 at 115200 baud
+screen /dev/ttyACM0 115200
+
+# 4. You should see console output from V5
+# [STARTUP] VEX V5 Brain initializing...
+
+# 5. Exit screen: Ctrl+A, then Ctrl+D
+
+# 6. If permission denied:
+sudo usermod -a -G dialout $USER
+# Then log out and back in
+
+echo "[STEP 0D Part 2] ✅ USB serial connection verified"
+```
+
+---
+
 ## 📋 STEP-BY-STEP BUILD PROCEDURES
 
 ### **STEP 1: Prepare Your System (5 minutes)**
