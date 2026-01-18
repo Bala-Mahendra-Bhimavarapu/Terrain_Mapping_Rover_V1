@@ -29,7 +29,7 @@
   <!-- All relative to base_link (center of chassis, at axle height) -->
   
   <!-- IMX500 Camera:  6. 92cm up, 2.5cm right, 13.5cm forward, -15.76° pitch -->
-  <xacro: property name="camera_x" value="0.135"/>        <!-- 13.5 cm forward -->
+  <xacro: property name="camera_x" value="0.130"/>        <!-- 13.0 cm forward -->
   <xacro: property name="camera_y" value="-0.025"/>       <!-- 2.5 cm right (negative Y) -->
   <xacro:property name="camera_z" value="0.0692"/>       <!-- 6.92 cm up -->
   <xacro:property name="camera_roll" value="0.0"/>
@@ -37,7 +37,7 @@
   <xacro:property name="camera_yaw" value="0.0"/>
   
   <!-- Arducam ToF: 6.92cm up, 1.4cm left, 13cm forward, -15.76° pitch -->
-  <xacro: property name="tof_x" value="0.13"/>            <!-- 13 cm forward -->
+  <xacro: property name="tof_x" value="0.130"/>            <!-- 13 cm forward -->
   <xacro:property name="tof_y" value="0.014"/>           <!-- 1.4 cm left (positive Y) -->
   <xacro:property name="tof_z" value="0.0692"/>          <!-- 6.92 cm up -->
   <xacro: property name="tof_roll" value="0.0"/>
