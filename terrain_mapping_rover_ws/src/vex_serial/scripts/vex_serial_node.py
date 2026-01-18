@@ -136,7 +136,7 @@ class VexSerialNode(Node):
     def _declare_parameters(self):
         """Declare all node parameters with defaults."""
         # Serial configuration
-        self.declare_parameter('serial_port', '/dev/ttyACM0')
+        self.declare_parameter('serial_port', '/dev/ttyACM1')
         self.declare_parameter('baud_rate', 115200)
         
         # Frame IDs
@@ -146,7 +146,7 @@ class VexSerialNode(Node):
         
         # Robot geometry (must match physical robot)
         self.declare_parameter('wheel_radius', 0.0508)  # 5.08 cm
-        self.declare_parameter('track_width', 0.2921)   # 29.21 cm
+        self.declare_parameter('track_width', 0.29)     # 29 cm
         self.declare_parameter('ticks_per_revolution', 900)  # VEX V5 18: 1
         
         # Motor direction compensation
