@@ -30,10 +30,10 @@ imx500_camera_node:
     
     # Direct intrinsic parameters (REPLACE WITH YOUR CALIBRATED VALUES)
     # These are example values - calibrate your camera for accurate results! 
-    camera_fx: 600.0    # Focal length X (pixels)
-    camera_fy: 600.0    # Focal length Y (pixels)
-    camera_cx: 640.0    # Principal point X (should be ~width/2)
-    camera_cy: 360.0    # Principal point Y (should be ~height/2)
+    camera_fx: 974.82    # Focal length X (pixels)
+    camera_fy: 977.03    # Focal length Y (pixels)
+    camera_cx: 630.57    # Principal point X (should be ~width/2)
+    camera_cy: 371.11    # Principal point Y (should be ~height/2)
     
     # Distortion coefficients [k1, k2, p1, p2, k3]
-    distortion_coefficients: [0.0, 0.0, 0.0, 0.0, 0.0]
+    distortion_coefficients: [-6.252192720771978, 13.495239229048028, 0.0034537142110085354, -0.003523666424911846, 8.770640895609361]
