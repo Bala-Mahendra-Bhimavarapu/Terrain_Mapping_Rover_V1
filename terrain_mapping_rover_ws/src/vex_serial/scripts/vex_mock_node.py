@@ -30,7 +30,7 @@ class VexMockNode(Node):
         
         # Declare parameters
         self.declare_parameter('wheel_radius', 0.0508)
-        self.declare_parameter('track_width', 0.2921)
+        self.declare_parameter('track_width', 0.29)
         self.declare_parameter('ticks_per_revolution', 900)
         self.declare_parameter('update_rate', 50.0)  # Hz
         self.declare_parameter('odom_frame', 'odom')
