@@ -1,0 +1,39 @@
+# IMX500 Camera Node Configuration
+
+imx500_camera_node:
+  ros__parameters:
+    # Image settings
+    width: 1280
+    height: 720
+    update_rate: 30.0
+    frame_id: "camera_optical_frame"
+    
+    # Auto exposure (set to false for manual control)
+    ae_enable: true
+    
+    # Manual exposure settings (used when ae_enable=false)
+    exposure_time_us: 20000   # 20ms
+    analogue_gain: 1.0
+    digital_gain: 1.0
+    
+    # Exposure limits
+    min_exposure_us:  100      # 0.1ms
+    max_exposure_us: 100000   # 100ms
+    min_gain: 1.0
+    max_gain: 16.0
+    
+    # Camera intrinsics configuration
+    # Set use_yaml_intrinsics=true to load from YAML file
+    # Set use_yaml_intrinsics=false to use parameters below
+    use_yaml_intrinsics: false
+    intrinsics_yaml_path: ""
+    
+    # Direct intrinsic parameters (REPLACE WITH YOUR CALIBRATED VALUES)
+    # These are example values - calibrate your camera for accurate results! 
+    camera_fx: 600.0    # Focal length X (pixels)
+    camera_fy: 600.0    # Focal length Y (pixels)
+    camera_cx: 640.0    # Principal point X (should be ~width/2)
+    camera_cy: 360.0    # Principal point Y (should be ~height/2)
+    
+    # Distortion coefficients [k1, k2, p1, p2, k3]
+    distortion_coefficients: [0.0, 0.0, 0.0, 0.0, 0.0]
