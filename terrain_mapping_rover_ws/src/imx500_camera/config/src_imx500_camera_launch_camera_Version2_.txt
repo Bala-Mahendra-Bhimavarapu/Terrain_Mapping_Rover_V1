@@ -1,0 +1,49 @@
+"""Launch file for IMX500 camera."""
+
+from launch import LaunchDescription
+from launch. actions import DeclareLaunchArgument
+from launch.conditions import IfCondition, UnlessCondition
+from launch. substitutions import LaunchConfiguration
+from launch_ros.actions import Node
+from ament_index_python. packages import get_package_share_directory
+import os
+
+
+def generate_launch_description():
+    pkg_dir = get_package_share_directory('imx500_camera')
+    default_config = os.path.join(pkg_dir, 'config', 'imx500_params.yaml')
+    
+    return LaunchDescription([
+        DeclareLaunchArgument('use_mock', default_value='false'),
+        DeclareLaunchArgument('config_file', default_value=default_config),
+        DeclareLaunchArgument('enable_classification', default_value='false'),
+        
+        # Real camera node
+        Node(
+            package='imx500_camera',
+            executable='imx500_camera_node. py',
+            name='imx500_camera_node',
+            output='screen',
+            parameters=[LaunchConfiguration('config_file')],
+            condition=UnlessCondition(LaunchConfiguration('use_mock'))
+        ),
+        
+        # Mock camera node
+        Node(
+            package='imx500_camera',
+            executable='camera_mock_node.py',
+            name='imx500_camera_node',
+            output='screen',
+            parameters=[LaunchConfiguration('config_file')],
+            condition=IfCondition(LaunchConfiguration('use_mock'))
+        ),
+        
+        # Classification node (optional)
+        Node(
+            package='imx500_camera',
+            executable='imx500_classification_node.py',
+            name='imx500_classification_node',
+            output='screen',
+            condition=IfCondition(LaunchConfiguration('enable_classification'))
+        ),
+    ])
