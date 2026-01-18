@@ -90,7 +90,7 @@ class ArducamToFDriver:
             self._camera = ac.ArducamCamera()
             
             # Open camera
-            ret = self._camera.open(ac.TOFConnect. CSI, 0)
+            ret = self._camera.open(ac.TOFConnect.CSI, 1)
             if ret != 0:
                 print(f"Failed to open ToF camera: error {ret}")
                 return False
@@ -109,7 +109,7 @@ class ArducamToFDriver:
             
             # Set range mode
             if self.config.max_range_m <= 2.0:
-                self._camera.setControl(ac.TOFControl. RANG, 0)  # Short range
+                self._camera.setControl(ac.TOFControl.RANG, 0)  # Short range
             else:
                 self._camera.setControl(ac. TOFControl.RANG, 1)  # Long range
             
