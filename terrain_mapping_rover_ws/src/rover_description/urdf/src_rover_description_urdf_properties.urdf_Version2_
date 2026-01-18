@@ -6,24 +6,24 @@
   <xacro:property name="deg_to_rad" value="${pi/180.0}"/>
   
   <!-- ==================== CHASSIS DIMENSIONS ==================== -->
-  <!-- Rover footprint:  36cm width x 28cm length -->
-  <xacro: property name="chassis_length" value="0.28"/>   <!-- 28 cm -->
-  <xacro:property name="chassis_width" value="0.36"/>    <!-- 36 cm -->
-  <xacro:property name="chassis_height" value="0.08"/>   <!-- Estimated -->
+  <!-- Rover footprint:  25.7cm width x 25.3cm length -->
+  <xacro: property name="chassis_length" value="0.253"/>   <!-- 25.3 cm -->
+  <xacro:property name="chassis_width" value="0.257"/>    <!-- 25.7 cm -->
+  <xacro:property name="chassis_height" value="0.10"/>   <!-- 10 cm -->
   
   <!-- ==================== DRIVETRAIN ==================== -->
   <!-- From user specs -->
   <xacro:property name="wheel_radius" value="0.0508"/>   <!-- 5.08 cm -->
-  <xacro:property name="track_width" value="0.2921"/>    <!-- 29.21 cm (wheel center to center) -->
-  <xacro:property name="wheelbase" value="0.20"/>        <!-- Estimated front-rear distance -->
-  <xacro:property name="wheel_width" value="0.03"/>      <!-- Estimated -->
+  <xacro:property name="track_width" value="0.295"/>    <!-- 29.5 cm (wheel center to center) -->
+  <xacro:property name="wheelbase" value="0.178"/>        <!-- 17.8 cm (front-rear distance) -->
+  <xacro:property name="wheel_width" value="0.0225"/>      <!-- 2.25 cm -->
   
   <!-- base_link is 2 inches (0.0508m) above ground, at axle height -->
   <xacro: property name="base_link_height" value="0.0508"/>
   
   <!-- ==================== MASS PROPERTIES ==================== -->
-  <xacro:property name="rover_mass" value="5.0"/>        <!-- Estimated kg -->
-  <xacro: property name="wheel_mass" value="0.2"/>        <!-- Estimated kg -->
+  <xacro:property name="rover_mass" value="4.44521"/>        <!-- 9.8 lb -->
+  <xacro: property name="wheel_mass" value="0.09752236"/>        <!-- around .2 lb -->
   
   <!-- ==================== SENSOR POSITIONS ==================== -->
   <!-- All relative to base_link (center of chassis, at axle height) -->
