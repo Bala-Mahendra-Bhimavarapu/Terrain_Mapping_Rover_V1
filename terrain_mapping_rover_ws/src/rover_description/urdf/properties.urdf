@@ -6,48 +6,48 @@
   <xacro:property name="deg_to_rad" value="${pi/180.0}"/>
   
   <!-- ==================== CHASSIS DIMENSIONS ==================== -->
-  <!-- Rover footprint:  25.7cm width x 25.3cm length -->
-  <xacro: property name="chassis_length" value="0.253"/>   <!-- 25.3 cm -->
-  <xacro:property name="chassis_width" value="0.257"/>    <!-- 25.7 cm -->
-  <xacro:property name="chassis_height" value="0.10"/>   <!-- 10 cm -->
+  <!-- Rover footprint:  25.7cm width x 25.3cm length x 5cm height -->
+  <xacro: property name="chassis_length" value="0.253"/>    <!-- 25.3 cm -->
+  <xacro:property name="chassis_width" value="0.257"/>      <!-- 25.7 cm -->
+  <xacro:property name="chassis_height" value="0.05"/>      <!-- 5 cm -->
   
   <!-- ==================== DRIVETRAIN ==================== -->
   <!-- From user specs -->
-  <xacro:property name="wheel_radius" value="0.0508"/>   <!-- 5.08 cm -->
-  <xacro:property name="track_width" value="0.295"/>    <!-- 29.5 cm (wheel center to center) -->
-  <xacro:property name="wheelbase" value="0.178"/>        <!-- 17.8 cm (front-rear distance) -->
-  <xacro:property name="wheel_width" value="0.0225"/>      <!-- 2.25 cm -->
+  <xacro:property name="wheel_radius" value="0.0508"/>      <!-- 5.08 cm -->
+  <xacro:property name="track_width" value="0.29"/>        <!-- 29 cm (wheel center to center) -->
+  <xacro:property name="wheelbase" value="0.1675"/>          <!-- 16.75 cm (front-rear distance) -->
+  <xacro:property name="wheel_width" value="0.0225"/>       <!-- 2.25 cm -->
   
   <!-- base_link is 2 inches (0.0508m) above ground, at axle height -->
   <xacro: property name="base_link_height" value="0.0508"/>
   
   <!-- ==================== MASS PROPERTIES ==================== -->
-  <xacro:property name="rover_mass" value="4.44521"/>        <!-- 9.8 lb -->
-  <xacro: property name="wheel_mass" value="0.09752236"/>        <!-- around .2 lb -->
+  <xacro:property name="rover_mass" value="4.44521"/>       <!-- 9.8 lb -->
+  <xacro: property name="wheel_mass" value="0.09752236"/>   <!-- around .2 lb -->
   
   <!-- ==================== SENSOR POSITIONS ==================== -->
   <!-- All relative to base_link (center of chassis, at axle height) -->
   
-  <!-- IMX500 Camera:  6. 92cm up, 2.5cm right, 13.5cm forward, -15.76° pitch -->
-  <xacro: property name="camera_x" value="0.130"/>        <!-- 13.0 cm forward -->
-  <xacro: property name="camera_y" value="-0.025"/>       <!-- 2.5 cm right (negative Y) -->
-  <xacro:property name="camera_z" value="0.0692"/>       <!-- 6.92 cm up -->
+  <!-- IMX500 Camera:  7.6cm up, 2.5cm right, 13.0cm forward, -15.76° pitch -->
+  <xacro: property name="camera_x" value="0.130"/>          <!-- 13.0 cm forward -->
+  <xacro: property name="camera_y" value="-0.025"/>         <!-- 2.5 cm right (negative Y) -->
+  <xacro:property name="camera_z" value="0.076"/>           <!-- 7.6 cm up -->
   <xacro:property name="camera_roll" value="0.0"/>
   <xacro:property name="camera_pitch" value="${-15.76 * deg_to_rad}"/>  <!-- -15.76 degrees -->
   <xacro:property name="camera_yaw" value="0.0"/>
   
-  <!-- Arducam ToF: 6.92cm up, 1.4cm left, 13cm forward, -15.76° pitch -->
-  <xacro: property name="tof_x" value="0.130"/>            <!-- 13 cm forward -->
-  <xacro:property name="tof_y" value="0.014"/>           <!-- 1.4 cm left (positive Y) -->
-  <xacro:property name="tof_z" value="0.0692"/>          <!-- 6.92 cm up -->
+  <!-- Arducam ToF: 7.6cm up, 1.4cm left, 11.5cm forward, -15.76° pitch -->
+  <xacro: property name="tof_x" value="0.115"/>             <!-- 11.5 cm forward -->
+  <xacro:property name="tof_y" value="0.014"/>              <!-- 1.4 cm left (positive Y) -->
+  <xacro:property name="tof_z" value="0.076"/>              <!-- 7.6 cm up -->
   <xacro: property name="tof_roll" value="0.0"/>
-  <xacro:property name="tof_pitch" value="${-15.76 * deg_to_rad}"/>
+  <xacro:property name="tof_pitch" value="${-15.76 * deg_to_rad}"/>  <!-- -15.76 degrees -->
   <xacro:property name="tof_yaw" value="0.0"/>
   
-  <!-- MPU6050 IMU: 6.22cm up, centered (x=0, y=0) -->
+  <!-- MPU6050 IMU: 5cm up, centered (x=0, y=0) -->
   <xacro: property name="imu_x" value="0.0"/>
   <xacro:property name="imu_y" value="0.0"/>
-  <xacro:property name="imu_z" value="0.0622"/>          <!-- 6.22 cm up -->
+  <xacro:property name="imu_z" value="0.05"/>               <!-- 5 cm up -->
   <xacro: property name="imu_roll" value="0.0"/>
   <xacro:property name="imu_pitch" value="0.0"/>
   <xacro:property name="imu_yaw" value="0.0"/>
