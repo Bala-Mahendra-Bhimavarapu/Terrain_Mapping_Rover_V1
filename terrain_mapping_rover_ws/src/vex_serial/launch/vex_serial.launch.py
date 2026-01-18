@@ -4,9 +4,10 @@ Launch file for VEX serial communication node.
 
 from launch import LaunchDescription
 from launch. actions import DeclareLaunchArgument
-from launch.substitutions import LaunchConfiguration
+from launch.conditions import IfCondition, UnlessCondition
+from launch. substitutions import LaunchConfiguration
 from launch_ros.actions import Node
-from ament_index_python.packages import get_package_share_directory
+from ament_index_python. packages import get_package_share_directory
 import os
 
 
@@ -15,7 +16,7 @@ def generate_launch_description():
     pkg_vex_serial = get_package_share_directory('vex_serial')
     
     # Default config file
-    default_config = os.path.join(pkg_vex_serial, 'config', 'vex_serial_params.yaml')
+    default_config = os. path.join(pkg_vex_serial, 'config', 'vex_serial_params. yaml')
     
     # Declare arguments
     use_mock_arg = DeclareLaunchArgument(
@@ -39,14 +40,14 @@ def generate_launch_description():
     # Real VEX serial node
     vex_serial_node = Node(
         package='vex_serial',
-        executable='vex_serial_node. py',
+        executable='vex_serial_node.py',
         name='vex_serial_node',
         output='screen',
         parameters=[
             LaunchConfiguration('config_file'),
             {'serial_port': LaunchConfiguration('serial_port')}
         ],
-        condition=launch. conditions.UnlessCondition(LaunchConfiguration('use_mock'))
+        condition=UnlessCondition(LaunchConfiguration('use_mock'))
     )
     
     # Mock node for testing
@@ -56,7 +57,7 @@ def generate_launch_description():
         name='vex_serial_node',  # Same name so topics match
         output='screen',
         parameters=[LaunchConfiguration('config_file')],
-        condition=launch.conditions. IfCondition(LaunchConfiguration('use_mock'))
+        condition=IfCondition(LaunchConfiguration('use_mock'))
     )
     
     return LaunchDescription([
