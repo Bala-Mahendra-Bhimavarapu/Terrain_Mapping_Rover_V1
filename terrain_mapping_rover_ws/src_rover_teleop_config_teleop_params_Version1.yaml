@@ -1,0 +1,29 @@
+# Teleop Node Configuration
+
+keyboard_teleop_node:
+  ros__parameters:
+    # Default speeds
+    linear_speed: 0.2       # m/s
+    angular_speed: 1.0      # rad/s
+    
+    # Maximum speeds
+    linear_speed_max: 0.3   # m/s (keep low for Pi 5 processing)
+    angular_speed_max: 1.5  # rad/s
+    
+    # Speed adjustment increment
+    speed_increment: 0.05
+    
+    # Boost multiplier (when holding shift)
+    boost_multiplier: 1.5
+    
+    # Publishing rate
+    publish_rate: 10.0
+    
+    # Topic to publish commands to
+    cmd_vel_topic: "/vex/cmd_vel"
+
+tank_teleop_node: 
+  ros__parameters:
+    wheel_speed: 0.2
+    max_speed: 0.3
+    speed_increment: 0.05
