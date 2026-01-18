@@ -1,0 +1,30 @@
+# Arducam ToF Camera Node Configuration
+
+arducam_tof_node:
+  ros__parameters: 
+    # Update rate (max ~30 Hz for ToF)
+    update_rate: 15.0
+    
+    # Frame IDs
+    frame_id: "tof_link"
+    optical_frame_id: "tof_optical_frame"
+    
+    # Range settings
+    max_range_m:  3.0          # Maximum depth (meters)
+    min_range_m: 0.1          # Minimum depth (meters)
+    confidence_threshold: 30   # 0-255, higher = more strict
+    
+    # Intrinsics configuration
+    use_yaml_intrinsics: false
+    intrinsics_yaml_path: ""
+    
+    # Direct intrinsic parameters (REPLACE WITH YOUR CALIBRATED VALUES)
+    # Default values for Arducam B0410 (240x180)
+    tof_fx: 240.0     # Focal length X
+    tof_fy:  180.0     # Focal length Y
+    tof_cx: 120.0     # Principal point X (width/2)
+    tof_cy: 90.0      # Principal point Y (height/2)
+    depth_scale: 0.001  # Raw depth value to meters (mm -> m)
+    
+    # Point cloud generation
+    publish_pointcloud: true
