@@ -4,8 +4,8 @@
   <name>rover_teleop</name>
   <version>1.0.0</version>
   <description>Keyboard teleop for tank drive rover</description>
-  <maintainer email="rover@example. com">Rover Team</maintainer>
-  <license>MIT</license>
+  <maintainer email="balamahendrareddybhi@gmail.vom">Bala</maintainer>
+  <license>Apache-2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
   <buildtool_depend>ament_cmake_python</buildtool_depend>
