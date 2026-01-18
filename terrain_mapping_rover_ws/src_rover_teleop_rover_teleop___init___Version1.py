@@ -1,1 +1,0 @@
-"""Rover teleop package."""
