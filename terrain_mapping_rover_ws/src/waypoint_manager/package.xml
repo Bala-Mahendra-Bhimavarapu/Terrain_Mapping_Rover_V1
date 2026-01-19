@@ -4,8 +4,8 @@
   <name>waypoint_manager</name>
   <version>1.0.0</version>
   <description>Waypoint recording and replay for rover navigation</description>
-  <maintainer email="rover@example.com">Rover Team</maintainer>
-  <license>MIT</license>
+  <maintainer email="balamahendrareddybhi@gmail.com">Bala</maintainer>
+  <license>Apache-2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
   <buildtool_depend>ament_cmake_python</buildtool_depend>
