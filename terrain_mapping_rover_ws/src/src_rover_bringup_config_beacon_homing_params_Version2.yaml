@@ -1,0 +1,83 @@
+# =============================================================================
+# Beacon Homing Configuration
+# =============================================================================
+#
+# Configuration for autonomous Bluetooth beacon homing. 
+# This system navigates to a beacon using RSSI signal tracking
+# and reactive obstacle avoidance (no SLAM/Nav2 required).
+#
+# =============================================================================
+
+beacon_homing_node:
+  ros__parameters:
+    # =========== TARGET BEACON ===========
+    # Leave empty to home to any detected beacon
+    # Set to specific UUID to target one beacon
+    target_uuid: ""
+    
+    # =========== ARRIVAL ===========
+    # Distance to consider "arrived" at beacon (meters)
+    arrival_distance: 0.5
+    
+    # =========== SPEED LIMITS ===========
+    # Maximum linear velocity (m/s)
+    max_linear_vel: 0.2
+    
+    # Minimum linear velocity when moving (m/s)
+    min_linear_vel: 0.05
+    
+    # Maximum angular velocity (rad/s)
+    max_angular_vel: 1.0
+    
+    # =========== OBSTACLE AVOIDANCE ===========
+    # Distance at which obstacle is considered blocking (meters)
+    obstacle_threshold: 0.4
+    
+    # Distance to start slowing down for obstacle (meters)
+    obstacle_slow_dist: 0.6
+    
+    # Maximum detection range for obstacles (meters)
+    max_detection_range: 2.5
+    
+    # =========== BEACON TRACKING ===========
+    # Time before beacon considered lost (seconds)
+    lost_timeout: 30.0
+    
+    # Number of readings to keep in history
+    history_size: 50
+    
+    # Readings to use for gradient calculation
+    gradient_window: 10
+    
+    # =========== DEPTH CAMERA ===========
+    # Scale factor to convert raw depth to meters
+    depth_scale: 0.001
+    
+    # =========== NAVIGATION GAINS ===========
+    # Proportional gain for approach speed
+    approach_gain: 0.5
+    
+    # Proportional gain for rotation
+    rotation_gain: 1.0
+    
+    # Heading error threshold before turning in place (radians)
+    heading_threshold: 0.3
+
+
+# =============================================================================
+# Bluetooth Scanner Configuration (if using beacon_homing)
+# =============================================================================
+beacon_scanner_node:
+  ros__parameters:
+    # Target UUID filter (empty = scan all)
+    target_uuid: ""
+    
+    # Scan duration per cycle (seconds)
+    scan_duration: 1.0
+    
+    # Scan rate (Hz)
+    scan_rate: 1.0
+    
+    # Path loss exponent for distance calculation
+    # 2.0 = free space, 2.5-3.0 = indoor with obstacles
+    path_loss_exponent: 2.5

@@ -1,0 +1,2 @@
+# Add to the existing message list: 
+  "msg/BeaconHomingState. msg"
