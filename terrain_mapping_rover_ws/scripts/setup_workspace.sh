@@ -67,7 +67,7 @@ clone_if_missing() {
 }
 
 # Core dependencies
-clone_if_missing "https://github.com/introlab/rtabmap_ros. git" "rtabmap_ros" "ros2"
+clone_if_missing "https://github.com/introlab/rtabmap_ros.git" "rtabmap_ros" "ros2"
 clone_if_missing "https://github.com/introlab/rtabmap.git" "rtabmap" "master"
 clone_if_missing "https://github.com/ros-navigation/navigation2.git" "navigation2" "humble"
 clone_if_missing "https://github.com/cra-ros-pkg/robot_localization.git" "robot_localization" "ros2"
@@ -90,7 +90,7 @@ clone_if_missing "https://github.com/ros/bond_core.git" "bond_core" "ros2"
 clone_if_missing "https://github.com/ros/angles.git" "angles" "ros2"
 
 echo "[4/6] Installing Python dependencies..."
-pip3 install --user \
+pip3 install --user --break-system-packages \
     pyserial \
     smbus2 \
     bleak \
@@ -101,6 +101,7 @@ pip3 install --user \
     numpy \
     pyyaml \
     transforms3d
+
 
 echo "[5/6] Creating environment setup script..."
 cat > "$WORKSPACE_DIR/setup_env.bash" << 'EOF'
@@ -131,7 +132,7 @@ export ROS_DOMAIN_ID=0
 echo "Environment ready:  terrain_mapping_rover_ws"
 EOF
 
-chmod +x "$WORKSPACE_DIR/setup_env. bash"
+chmod +x "$WORKSPACE_DIR/setup_env.bash"
 
 echo "[6/6] Setup complete!"
 echo ""
