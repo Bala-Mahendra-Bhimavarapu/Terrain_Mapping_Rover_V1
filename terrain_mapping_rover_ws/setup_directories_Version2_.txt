@@ -1,0 +1,11 @@
+#!/bin/bash
+# Run this script to create necessary directories
+
+# Create directories
+mkdir -p src/rover_bringup/maps
+mkdir -p src/rover_bringup/behavior_trees
+mkdir -p src/rover_bringup/rviz
+
+# Create placeholder files
+touch src/rover_bringup/maps/. gitkeep
+touch src/rover_bringup/behavior_trees/. gitkeep

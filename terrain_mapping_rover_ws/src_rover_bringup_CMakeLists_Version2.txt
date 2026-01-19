@@ -1,0 +1,43 @@
+cmake_minimum_required(VERSION 3.8)
+project(rover_bringup)
+
+# Find dependencies
+find_package(ament_cmake REQUIRED)
+
+# ============== INSTALL LAUNCH FILES ==============
+install(DIRECTORY
+  launch
+  DESTINATION share/${PROJECT_NAME}
+)
+
+# ============== INSTALL CONFIG FILES ==============
+install(DIRECTORY
+  config
+  DESTINATION share/${PROJECT_NAME}
+)
+
+# ============== INSTALL RVIZ CONFIGS ==============
+install(DIRECTORY
+  rviz
+  DESTINATION share/${PROJECT_NAME}
+)
+
+# ============== INSTALL MAPS DIRECTORY (for saved maps) ==============
+install(DIRECTORY
+  maps
+  DESTINATION share/${PROJECT_NAME}
+)
+
+# ============== INSTALL BEHAVIOR TREES ==============
+install(DIRECTORY
+  behavior_trees
+  DESTINATION share/${PROJECT_NAME}
+)
+
+# ============== TESTING ==============
+if(BUILD_TESTING)
+  find_package(ament_lint_auto REQUIRED)
+  ament_lint_auto_find_test_dependencies()
+endif()
+
+ament_package()

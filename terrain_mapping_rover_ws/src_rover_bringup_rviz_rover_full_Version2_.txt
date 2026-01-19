@@ -1,0 +1,243 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name:  Displays
+    Property Tree Widget:
+      Expanded:  ~
+      Splitter Ratio: 0.5
+  - Class: rviz_common/Selection
+    Name: Selection
+  - Class: rviz_common/Tool Properties
+    Name: Tool Properties
+  - Class:  rviz_common/Views
+    Name: Views
+
+Visualization Manager:
+  Class: ""
+  Displays:
+    # ===== GRID =====
+    - Class: rviz_default_plugins/Grid
+      Name:  Grid
+      Enabled: true
+      Cell Size: 0.5
+      Color: 160; 160; 164
+      Line Style:
+        Value: Lines
+      Normal Cell Count: 0
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Plane:  XY
+      Plane Cell Count: 20
+      Reference Frame: <Fixed Frame>
+
+    # ===== TF =====
+    - Class:  rviz_default_plugins/TF
+      Name: TF
+      Enabled: true
+      Show Arrows: true
+      Show Axes: true
+      Show Names: true
+      Frame Timeout: 15
+      Frames:
+        All Enabled:  true
+      Marker Scale: 0.3
+      Update Interval: 0
+
+    # ===== ROBOT MODEL =====
+    - Class: rviz_default_plugins/RobotModel
+      Name: RobotModel
+      Enabled:  true
+      Description Topic: 
+        Value: /robot_description
+      Alpha: 1
+
+    # ===== ODOMETRY =====
+    - Class: rviz_default_plugins/Odometry
+      Name: Odometry
+      Enabled: true
+      Topic:
+        Value: /odom
+      Shape: 
+        Value: Arrow
+      Covariance:
+        Value: true
+      Position Tolerance:  0.1
+      Angle Tolerance: 0.1
+      Keep:  100
+      Arrow Length: 0.3
+
+    # ===== CAMERA IMAGE =====
+    - Class: rviz_default_plugins/Image
+      Name: Camera
+      Enabled: true
+      Topic:
+        Value: /camera/image_raw
+      Max Value: 1
+      Min Value: 0
+      Normalize Range: true
+
+    # ===== DEPTH IMAGE =====
+    - Class: rviz_default_plugins/Image
+      Name: Depth
+      Enabled: false
+      Topic:
+        Value:  /tof/depth/image_raw
+      Max Value:  1
+      Min Value: 0
+      Normalize Range: true
+
+    # ===== TOF POINT CLOUD =====
+    - Class: rviz_default_plugins/PointCloud2
+      Name: ToF Points
+      Enabled: true
+      Topic:
+        Value:  /tof/points
+      Size (m): 0.02
+      Color Transformer:  FlatColor
+      Color: 0; 255; 0
+      Style: Points
+      Alpha: 1
+      Decay Time: 0
+      Queue Size: 10
+
+    # ===== SLAM MAP =====
+    - Class: rviz_default_plugins/Map
+      Name: Map
+      Enabled: true
+      Topic:
+        Value: /map
+      Alpha: 0.7
+      Color Scheme: map
+      Draw Behind: true
+      Update Topic: 
+        Value: /map_updates
+
+    # ===== GLOBAL COSTMAP =====
+    - Class: rviz_default_plugins/Map
+      Name: Global Costmap
+      Enabled:  false
+      Topic:
+        Value:  /global_costmap/costmap
+      Alpha: 0.5
+      Color Scheme: costmap
+
+    # ===== LOCAL COSTMAP =====
+    - Class: rviz_default_plugins/Map
+      Name: Local Costmap
+      Enabled:  true
+      Topic:
+        Value:  /local_costmap/costmap
+      Alpha: 0.5
+      Color Scheme: costmap
+
+    # ===== GLOBAL PATH =====
+    - Class: rviz_default_plugins/Path
+      Name: Global Path
+      Enabled: true
+      Topic: 
+        Value: /plan
+      Color: 255; 0; 0
+      Alpha: 1
+      Line Style:  Lines
+      Line Width: 0.03
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0.01
+      Pose Style: None
+
+    # ===== LOCAL PATH =====
+    - Class:  rviz_default_plugins/Path
+      Name: Local Path
+      Enabled: true
+      Topic:
+        Value: /local_plan
+      Color: 0; 0; 255
+      Alpha: 1
+      Line Style: Lines
+      Line Width: 0.02
+
+    # ===== GOAL POSE =====
+    - Class: rviz_default_plugins/PoseStamped
+      Name:  Goal
+      Enabled: true
+      Topic:
+        Value: /goal_pose
+      Shape:  Arrow
+      Color: 255; 25; 0
+      Alpha: 1
+      Arrow Length: 0.3
+      Axes Length: 0.3
+
+    # ===== LANDMARKS =====
+    - Class: rviz_default_plugins/MarkerArray
+      Name: Landmarks
+      Enabled: true
+      Topic:
+        Value: /landmarks/markers
+      Queue Size: 100
+
+    # ===== WAYPOINTS =====
+    - Class:  rviz_default_plugins/MarkerArray
+      Name:  Waypoints
+      Enabled: true
+      Topic:
+        Value:  /waypoints/markers
+      Queue Size: 100
+
+    # ===== FOOTPRINT =====
+    - Class:  rviz_default_plugins/Polygon
+      Name: Robot Footprint
+      Enabled:  true
+      Topic:
+        Value: /local_costmap/published_footprint
+      Color: 25; 255; 0
+      Alpha: 0.5
+
+  # ===== GLOBAL OPTIONS =====
+  Global Options:
+    Background Color: 48; 48; 48
+    Fixed Frame: map
+    Frame Rate: 30
+
+  # ===== TOOLS =====
+  Tools:
+    - Class: rviz_default_plugins/MoveCamera
+    - Class: rviz_default_plugins/Select
+    - Class: rviz_default_plugins/FocusCamera
+    - Class: rviz_default_plugins/Measure
+    - Class: rviz_default_plugins/SetInitialPose
+      Topic:  /initialpose
+    - Class: rviz_default_plugins/SetGoal
+      Topic: /goal_pose
+    - Class: rviz_default_plugins/PublishPoint
+      Topic: /clicked_point
+
+  # ===== VIEW =====
+  Views:
+    Current: 
+      Class: rviz_default_plugins/Orbit
+      Distance: 5
+      Enable Stereo Rendering:
+        Value: false
+      Focal Point:
+        X: 0
+        Y: 0
+        Z: 0
+      Focal Shape Fixed Size: true
+      Focal Shape Size: 0.05
+      Invert Z Axis: false
+      Name: Current View
+      Near Clip Distance: 0.01
+      Pitch: 0.7
+      Target Frame: base_link
+      Value: Orbit
+      Yaw: 0.8
+    Saved: ~
+
+Window Geometry:
+  Height: 1000
+  Width: 1600
+  X: 50
+  Y: 50

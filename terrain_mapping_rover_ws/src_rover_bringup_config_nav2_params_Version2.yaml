@@ -1,0 +1,617 @@
+# =============================================================================
+# Nav2 Configuration for Lunar Rover
+# =============================================================================
+#
+# This configuration is optimized for: 
+# - Small differential drive robot (29cm track width)
+# - Slow speeds (max 0.3 m/s) for Pi 5 processing
+# - ToF depth camera for obstacle detection (3m range)
+# - Indoor/lunar terrain navigation
+#
+# Robot footprint:  28cm x 36cm (rectangular)
+#
+# =============================================================================
+
+# =============================================================================
+# AMCL - Adaptive Monte Carlo Localization
+# =============================================================================
+# Used when navigating with a pre-built map (not SLAM)
+amcl:
+  ros__parameters:
+    use_sim_time: false
+    
+    # Particle filter parameters
+    min_particles: 500
+    max_particles: 2000
+    pf_err:  0.05
+    pf_z: 0.99
+    
+    # Motion model (differential drive)
+    robot_model_type: "nav2_amcl::DifferentialMotionModel"
+    alpha1: 0.2                     # Rotation noise from rotation
+    alpha2: 0.2                     # Rotation noise from translation
+    alpha3: 0.2                     # Translation noise from translation
+    alpha4: 0.2                     # Translation noise from rotation
+    alpha5: 0.2                     # Translation noise (strafe)
+    
+    # Sensor model
+    laser_model_type: "likelihood_field"
+    laser_likelihood_max_dist: 2.0
+    laser_max_range: 3.0
+    laser_min_range: 0.1
+    max_beams: 60
+    
+    # Observation model parameters
+    z_hit: 0.5
+    z_rand: 0.5
+    z_short: 0.05
+    z_max: 0.05
+    sigma_hit: 0.2
+    lambda_short: 0.1
+    
+    # Frame configuration
+    base_frame_id: "base_link"
+    odom_frame_id: "odom"
+    global_frame_id: "map"
+    
+    # Update thresholds
+    update_min_a: 0.2               # Min rotation to update (rad)
+    update_min_d: 0.1               # Min translation to update (m)
+    
+    # Recovery
+    recovery_alpha_slow: 0.0
+    recovery_alpha_fast: 0.0
+    resample_interval: 1
+    
+    # TF
+    tf_broadcast:  true
+    transform_tolerance: 1.0
+    
+    # Initial pose (can be set via topic)
+    set_initial_pose:  false
+    initial_pose: 
+      x: 0.0
+      y: 0.0
+      z: 0.0
+      yaw: 0.0
+
+
+# =============================================================================
+# BT NAVIGATOR - Behavior Tree Navigator
+# =============================================================================
+bt_navigator:
+  ros__parameters:
+    use_sim_time: false
+    
+    # Frame configuration
+    global_frame: map
+    robot_base_frame: base_link
+    odom_topic: /odom
+    
+    # Behavior tree configuration
+    bt_loop_duration: 10
+    default_server_timeout: 20
+    wait_for_service_timeout: 1000
+    action_server_result_timeout: 900. 0
+    navigators:  ["navigate_to_pose", "navigate_through_poses"]
+    
+    # Default behavior tree XML
+    default_nav_to_pose_bt_xml: ""  # Uses built-in
+    default_nav_through_poses_bt_xml: ""
+    
+    # Error recovery
+    error_code_names: 
+      - compute_path_error_code
+      - follow_path_error_code
+    
+    # Behavior tree plugins
+    plugin_lib_names:
+      - nav2_compute_path_to_pose_action_bt_node
+      - nav2_compute_path_through_poses_action_bt_node
+      - nav2_smooth_path_action_bt_node
+      - nav2_follow_path_action_bt_node
+      - nav2_spin_action_bt_node
+      - nav2_wait_action_bt_node
+      - nav2_assisted_teleop_action_bt_node
+      - nav2_back_up_action_bt_node
+      - nav2_drive_on_heading_bt_node
+      - nav2_clear_costmap_service_bt_node
+      - nav2_is_stuck_condition_bt_node
+      - nav2_goal_reached_condition_bt_node
+      - nav2_goal_updated_condition_bt_node
+      - nav2_globally_updated_goal_condition_bt_node
+      - nav2_is_path_valid_condition_bt_node
+      - nav2_initial_pose_received_condition_bt_node
+      - nav2_reinitialize_global_localization_service_bt_node
+      - nav2_rate_controller_bt_node
+      - nav2_distance_controller_bt_node
+      - nav2_speed_controller_bt_node
+      - nav2_truncate_path_action_bt_node
+      - nav2_truncate_path_local_action_bt_node
+      - nav2_goal_updater_node_bt_node
+      - nav2_recovery_node_bt_node
+      - nav2_pipeline_sequence_bt_node
+      - nav2_round_robin_node_bt_node
+      - nav2_transform_available_condition_bt_node
+      - nav2_time_expired_condition_bt_node
+      - nav2_path_expiring_timer_condition
+      - nav2_distance_traveled_condition_bt_node
+      - nav2_single_trigger_bt_node
+      - nav2_goal_updated_controller_bt_node
+      - nav2_is_battery_low_condition_bt_node
+      - nav2_navigate_to_pose_action_bt_node
+      - nav2_navigate_through_poses_action_bt_node
+      - nav2_remove_passed_goals_action_bt_node
+      - nav2_planner_selector_bt_node
+      - nav2_controller_selector_bt_node
+      - nav2_goal_checker_selector_bt_node
+      - nav2_controller_cancel_bt_node
+      - nav2_path_longer_on_approach_bt_node
+      - nav2_wait_cancel_bt_node
+      - nav2_spin_cancel_bt_node
+      - nav2_back_up_cancel_bt_node
+      - nav2_assisted_teleop_cancel_bt_node
+      - nav2_drive_on_heading_cancel_bt_node
+      - nav2_is_battery_charging_condition_bt_node
+
+
+# =============================================================================
+# CONTROLLER SERVER - Path Following
+# =============================================================================
+controller_server:
+  ros__parameters: 
+    use_sim_time: false
+    
+    # Controller frequency (must be achievable on Pi 5)
+    controller_frequency: 10.0
+    
+    # Velocity thresholds
+    min_x_velocity_threshold: 0.001
+    min_y_velocity_threshold: 0.5     # High because we're differential drive (no strafe)
+    min_theta_velocity_threshold: 0.001
+    
+    # Failure tolerance
+    failure_tolerance: 0.3
+    
+    # Progress checker - detect if stuck
+    progress_checker_plugins:  ["progress_checker"]
+    progress_checker: 
+      plugin: "nav2_controller::SimpleProgressChecker"
+      required_movement_radius: 0.3   # Must move this much
+      movement_time_allowance: 10.0   # Within this time (seconds)
+    
+    # Goal checker - determine if goal reached
+    goal_checker_plugins:  ["goal_checker"]
+    goal_checker:
+      plugin: "nav2_controller::SimpleGoalChecker"
+      xy_goal_tolerance: 0.15         # Position tolerance (meters)
+      yaw_goal_tolerance: 0.25        # Orientation tolerance (radians, ~14°)
+      stateful: true
+    
+    # Controller plugin
+    controller_plugins: ["FollowPath"]
+    
+    # Regulated Pure Pursuit Controller
+    # Good for differential drive robots
+    FollowPath: 
+      plugin: "nav2_regulated_pure_pursuit_controller::RegulatedPurePursuitController"
+      
+      # Desired velocity
+      desired_linear_vel: 0.2         # Target speed (m/s)
+      
+      # Lookahead configuration
+      lookahead_dist: 0.4             # Base lookahead distance (m)
+      min_lookahead_dist: 0.3         # Minimum lookahead (m)
+      max_lookahead_dist: 0.9         # Maximum lookahead (m)
+      lookahead_time: 1.5             # Time-based lookahead (seconds)
+      use_velocity_scaled_lookahead_dist: false
+      
+      # Rotation behavior
+      rotate_to_heading_angular_vel: 0.8    # Rotation speed (rad/s)
+      use_rotate_to_heading: true           # Rotate to face path first
+      rotate_to_heading_min_angle: 0.785    # Min angle to trigger rotation (45°)
+      allow_reversing: false                # Don't drive backwards
+      
+      # Approach behavior
+      min_approach_linear_velocity: 0.05    # Slow down near goal
+      approach_velocity_scaling_dist: 0.6   # Start slowing this far from goal
+      
+      # Collision detection
+      use_collision_detection: true
+      max_allowed_time_to_collision_up_to_carrot: 1.0
+      
+      # Velocity regulation
+      use_regulated_linear_velocity_scaling: true
+      use_cost_regulated_linear_velocity_scaling: false
+      regulated_linear_scaling_min_radius: 0.9
+      regulated_linear_scaling_min_speed: 0.1
+      
+      # Acceleration limits
+      max_angular_accel: 1.5          # Max angular acceleration (rad/s²)
+      
+      # Path search
+      max_robot_pose_search_dist: 10.0
+      
+      # Transform tolerance
+      transform_tolerance: 0.1
+
+
+# =============================================================================
+# PLANNER SERVER - Path Planning
+# =============================================================================
+planner_server:
+  ros__parameters:
+    use_sim_time: false
+    
+    # Planner plugins
+    planner_plugins: ["GridBased"]
+    
+    # SMAC Hybrid-A* Planner
+    # Good for non-holonomic robots (differential drive)
+    GridBased:
+      plugin: "nav2_smac_planner/SmacPlannerHybrid"
+      
+      # Tolerance
+      tolerance: 0.25                 # Goal tolerance (meters)
+      
+      # Costmap handling
+      downsample_costmap: false
+      downsampling_factor: 1
+      allow_unknown:  true             # Plan through unknown space
+      
+      # Planning limits
+      max_iterations: 1000000         # Max search iterations
+      max_on_approach_iterations: 1000
+      max_planning_time: 5.0          # Max time to plan (seconds)
+      
+      # Motion model
+      motion_model_for_search: "DUBIN"  # Dubin curves for diff drive
+      
+      # Cost configuration
+      cost_travel_multiplier: 2.0
+      
+      # Analytic expansion
+      angle_quantization_bins: 72     # 5° resolution
+      analytic_expansion_ratio: 3.5
+      analytic_expansion_max_length: 3.0
+      
+      # Minimum turning radius (based on robot geometry)
+      minimum_turning_radius: 0.20    # ~20cm (tight turns for small robot)
+      
+      # Cost penalties
+      reverse_penalty: 2.0            # Penalize reversing
+      change_penalty: 0.0
+      non_straight_penalty: 1.2
+      cost_penalty: 2.0
+      retrospective_penalty: 0.015
+      
+      # Lookup table
+      lookup_table_size: 20. 0
+      cache_obstacle_heuristic: false
+      
+      # Path smoothing
+      smooth_path: true
+      
+      # Smoother parameters
+      smoother: 
+        max_iterations: 1000
+        w_smooth: 0.3
+        w_data: 0.2
+        tolerance: 1.0e-10
+        do_refinement: true
+        refinement_num:  2
+
+
+# =============================================================================
+# SMOOTHER SERVER - Path Smoothing
+# =============================================================================
+smoother_server:
+  ros__parameters: 
+    use_sim_time:  false
+    
+    smoother_plugins: ["simple_smoother"]
+    
+    simple_smoother:
+      plugin: "nav2_smoother::SimpleSmoother"
+      tolerance: 1.0e-10
+      do_refinement: true
+      refinement_num: 2
+      max_its: 1000
+      w_data: 0.2
+      w_smooth: 0.3
+
+
+# =============================================================================
+# BEHAVIOR SERVER - Recovery Behaviors
+# =============================================================================
+behavior_server:
+  ros__parameters:
+    use_sim_time: false
+    
+    # Costmap for behaviors
+    local_costmap_topic: local_costmap/costmap_raw
+    global_costmap_topic: global_costmap/costmap_raw
+    local_footprint_topic: local_costmap/published_footprint
+    global_footprint_topic: global_costmap/published_footprint
+    
+    cycle_frequency: 10.0
+    
+    # Behavior plugins
+    behavior_plugins: ["spin", "backup", "drive_on_heading", "assisted_teleop", "wait"]
+    
+    # Spin behavior (rotate in place to clear costmap)
+    spin:
+      plugin: "nav2_behaviors/Spin"
+    
+    # Backup behavior (reverse slowly)
+    backup:
+      plugin: "nav2_behaviors/BackUp"
+    
+    # Drive on heading (drive straight)
+    drive_on_heading: 
+      plugin: "nav2_behaviors/DriveOnHeading"
+    
+    # Wait behavior (just wait)
+    wait:
+      plugin: "nav2_behaviors/Wait"
+    
+    # Assisted teleop (human takes over)
+    assisted_teleop: 
+      plugin: "nav2_behaviors/AssistedTeleop"
+    
+    # Transform tolerance
+    local_frame:  odom
+    global_frame: map
+    robot_base_frame: base_link
+    transform_tolerance: 0.1
+    
+    # Behavior parameters
+    simulate_ahead_time: 2.0
+    max_rotational_vel: 1.0
+    min_rotational_vel: 0.4
+    rotational_acc_lim: 1.5
+
+
+# =============================================================================
+# WAYPOINT FOLLOWER - Multi-waypoint Navigation
+# =============================================================================
+waypoint_follower:
+  ros__parameters:
+    use_sim_time: false
+    
+    loop_rate: 20
+    stop_on_failure: false          # Continue to next waypoint on failure
+    
+    # Waypoint task executor plugins
+    waypoint_task_executor_plugin: "wait_at_waypoint"
+    
+    wait_at_waypoint:
+      plugin: "nav2_waypoint_follower:: WaitAtWaypoint"
+      enabled: true
+      waypoint_pause_duration: 0    # Don't pause at waypoints (0 seconds)
+
+
+# =============================================================================
+# VELOCITY SMOOTHER - Smooth Velocity Commands
+# =============================================================================
+velocity_smoother:
+  ros__parameters:
+    use_sim_time: false
+    
+    smoothing_frequency: 20.0
+    scale_velocities: false
+    feedback:  "OPEN_LOOP"
+    
+    # Velocity limits (must match robot capabilities)
+    max_velocity:  [0.3, 0.0, 1.5]     # [x, y, theta] m/s, m/s, rad/s
+    min_velocity: [-0.3, 0.0, -1.5]   # Allow reverse
+    
+    # Acceleration limits
+    max_accel: [0.5, 0.0, 2.0]        # [x, y, theta] m/s², m/s², rad/s²
+    max_decel: [-0.5, 0.0, -2.0]      # Deceleration
+    
+    # Odometry input
+    odom_topic: "odom"
+    odom_duration: 0.1
+    
+    # Deadband (ignore tiny commands)
+    deadband_velocity:  [0.0, 0.0, 0.0]
+    velocity_timeout: 1.0
+
+
+# =============================================================================
+# LOCAL COSTMAP - For Obstacle Avoidance
+# =============================================================================
+local_costmap: 
+  local_costmap:
+    ros__parameters:
+      use_sim_time: false
+      
+      # Update rates
+      update_frequency: 5.0           # Costmap update rate (Hz)
+      publish_frequency: 2.0          # Publish rate (Hz)
+      
+      # Frame configuration
+      global_frame: odom
+      robot_base_frame: base_link
+      
+      # Costmap size (rolling window around robot)
+      rolling_window:  true
+      width: 3                        # 3 meters wide
+      height: 3                       # 3 meters tall
+      resolution: 0.05                # 5cm cells
+      
+      # Robot footprint (rectangular, in meters)
+      # Corners: front-left, front-right, back-right, back-left
+      footprint: "[[0.14, 0.18], [0.14, -0.18], [-0.14, -0.18], [-0.14, 0.18]]"
+      footprint_padding: 0.02         # 2cm padding
+      
+      # Plugins
+      plugins: ["voxel_layer", "inflation_layer"]
+      
+      # Voxel layer (3D obstacle detection from ToF)
+      voxel_layer:
+        plugin: "nav2_costmap_2d::VoxelLayer"
+        enabled: true
+        
+        # Observation sources
+        observation_sources: tof_points
+        
+        # ToF point cloud
+        tof_points: 
+          topic: /tof/points
+          data_type: "PointCloud2"
+          sensor_frame: "tof_optical_frame"
+          observation_persistence: 0.0
+          expected_update_rate: 15.0
+          
+          # Range limits
+          max_obstacle_height: 0.5    # Max height for obstacles (m)
+          min_obstacle_height: 0.05   # Min height (ignore ground)
+          obstacle_max_range: 3.0     # Max range to mark obstacles
+          obstacle_min_range: 0.1     # Min range
+          raytrace_max_range: 3.5     # Max range for ray tracing
+          raytrace_min_range: 0.0
+          
+          # Behavior
+          clearing:  true              # Clear free space
+          marking: true               # Mark obstacles
+          
+        # Voxel parameters
+        z_voxels: 10
+        z_resolution: 0.05
+        origin_z: 0.0
+        unknown_threshold: 15
+        mark_threshold: 0
+        combination_method: 1         # 1 = max
+        publish_voxel_map: false
+      
+      # Inflation layer (expand obstacles for safety)
+      inflation_layer: 
+        plugin: "nav2_costmap_2d::InflationLayer"
+        enabled: true
+        cost_scaling_factor: 3.0      # How fast cost decays with distance
+        inflation_radius: 0.35        # Inflate obstacles by 35cm
+      
+      # Always send full costmap
+      always_send_full_costmap: true
+
+
+# =============================================================================
+# GLOBAL COSTMAP - For Path Planning
+# =============================================================================
+global_costmap:
+  global_costmap:
+    ros__parameters: 
+      use_sim_time:  false
+      
+      # Update rates (slower than local since it's larger)
+      update_frequency: 1.0
+      publish_frequency: 1.0
+      
+      # Frame configuration
+      global_frame: map
+      robot_base_frame:  base_link
+      
+      # Robot footprint
+      footprint: "[[0.14, 0.18], [0.14, -0.18], [-0.14, -0.18], [-0.14, 0.18]]"
+      footprint_padding: 0.02
+      
+      # Costmap size (will be set by map if using static layer)
+      resolution: 0.05
+      track_unknown_space: true
+      
+      # Plugins
+      plugins:  ["static_layer", "obstacle_layer", "inflation_layer"]
+      
+      # Static layer (from SLAM map)
+      static_layer: 
+        plugin: "nav2_costmap_2d::StaticLayer"
+        enabled: true
+        map_subscribe_transient_local: true
+        map_topic: "/map"
+        subscribe_to_updates: true
+      
+      # Obstacle layer (from sensors)
+      obstacle_layer: 
+        plugin: "nav2_costmap_2d::ObstacleLayer"
+        enabled: true
+        
+        observation_sources: tof_points
+        
+        tof_points:
+          topic:  /tof/points
+          data_type: "PointCloud2"
+          sensor_frame: "tof_optical_frame"
+          observation_persistence: 0.0
+          expected_update_rate: 15.0
+          max_obstacle_height: 0.5
+          min_obstacle_height: 0.05
+          obstacle_max_range: 3.0
+          obstacle_min_range: 0.1
+          raytrace_max_range: 3.5
+          raytrace_min_range: 0.0
+          clearing: true
+          marking: true
+      
+      # Inflation layer
+      inflation_layer:
+        plugin:  "nav2_costmap_2d::InflationLayer"
+        enabled: true
+        cost_scaling_factor: 3.0
+        inflation_radius: 0.55        # Larger inflation for global planning
+      
+      always_send_full_costmap:  true
+
+
+# =============================================================================
+# MAP SERVER - Load/Save Maps
+# =============================================================================
+map_server:
+  ros__parameters: 
+    use_sim_time:  false
+    yaml_filename: ""                 # Set via launch argument
+    topic_name: "map"
+    frame_id: "map"
+
+
+# =============================================================================
+# MAP SAVER - Save Maps
+# =============================================================================
+map_saver:
+  ros__parameters:
+    use_sim_time: false
+    save_map_timeout: 5.0
+    free_thresh_default: 0.25
+    occupied_thresh_default: 0.65
+    map_subscribe_transient_local:  true
+
+
+# =============================================================================
+# LIFECYCLE MANAGER - Manages Node Lifecycles
+# =============================================================================
+lifecycle_manager:
+  ros__parameters:
+    use_sim_time: false
+    autostart: true
+    bond_timeout: 4.0
+    attempt_respawn_reconnection: true
+    bond_respawn_max_duration: 10.0
+    
+    node_names:
+      - controller_server
+      - planner_server
+      - behavior_server
+      - bt_navigator
+      - waypoint_follower
+      - velocity_smoother
+
+lifecycle_manager_localization:
+  ros__parameters: 
+    use_sim_time:  false
+    autostart: true
+    bond_timeout: 4.0
+    
+    node_names:
+      - map_server
+      - amcl
