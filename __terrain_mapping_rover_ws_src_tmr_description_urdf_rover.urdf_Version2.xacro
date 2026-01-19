@@ -10,15 +10,15 @@
   <xacro:property name="pi" value="3.14159265359"/>
   
   <!-- ===== ROVER BODY DIMENSIONS ===== -->
-  <xacro:property name="rover_length" value="0.28"/>      <!-- 28 cm (X direction) -->
-  <xacro:property name="rover_width" value="0.36"/>       <!-- 36 cm (Y direction) -->
-  <xacro:property name="rover_height" value="0.15"/>      <!-- Approximate body height (Z) -->
+  <xacro:property name="rover_length" value="0.26"/>      <!-- 26 cm (X direction) -->
+  <xacro:property name="rover_width" value="0.26"/>       <!-- 26 cm (Y direction) -->
+  <xacro:property name="rover_height" value="0.045"/>     <!-- 4.5 cm (Z direction) -->
   
   <!-- ===== WHEEL PARAMETERS ===== -->
   <xacro:property name="wheel_radius" value="0.0508"/>    <!-- 2 inches = 0.0508 m -->
-  <xacro:property name="wheel_width" value="0.04"/>       <!-- Approximate wheel width -->
-  <xacro: property name="track_width" value="0.295"/>      <!-- Distance between wheel centers -->
-  <xacro:property name="wheelbase" value="0.20"/>         <!-- Distance between front/back axles -->
+  <xacro:property name="wheel_width" value="0.0275"/>       <!-- 2.75 cm wheel width -->
+  <xacro: property name="track_width" value="0.295"/>      <!-- 29.5 cm distance between wheel centers -->
+  <xacro:property name="wheelbase" value="0.167"/>         <!-- 16.7 cm distance between front/back axles -->
   
   <!-- ===== BASE_LINK HEIGHT ===== -->
   <!-- base_link is at center of rotation, 2 inches above ground -->
@@ -27,21 +27,21 @@
   <!-- ===== CAMERA MOUNT (IMX500) ===== -->
   <!-- Position relative to base_link -->
   <!-- 13. 5cm forward, 2.75cm right, 8.1cm up, -15.76° pitch -->
-  <xacro: property name="camera_x" value="0.135"/>         <!-- Forward -->
-  <xacro:property name="camera_y" value="-0.0275"/>       <!-- Right (negative Y in ROS) -->
-  <xacro:property name="camera_z" value="0.081"/>         <!-- Up from base_link -->
+  <xacro: property name="camera_x" value="0.13"/>        <!-- 13 cm Forward -->
+  <xacro:property name="camera_y" value="-0.0275"/>       <!-- 2.75 cm Right (negative Y in ROS) -->
+  <xacro:property name="camera_z" value="0.078"/>         <!-- 7.8 cm Up from base_link -->
   <xacro:property name="camera_roll" value="0.0"/>        <!-- No roll -->
-  <xacro:property name="camera_pitch" value="-0.2751"/>   <!-- -15.76° = -0.2751 rad -->
+  <xacro:property name="camera_pitch" value="-0.2751"/>   <!-- -15.76° = -0.2751 rad Tilted down slightly-->
   <xacro:property name="camera_yaw" value="0.0"/>         <!-- No yaw, facing forward -->
   
   <!-- ===== TOF CAMERA MOUNT (Arducam B0410) ===== -->
   <!-- Position relative to base_link -->
   <!-- 13.5cm forward, 1.4cm left, 8.1cm up, -15.76° pitch -->
-  <xacro:property name="tof_x" value="0.135"/>            <!-- Forward -->
-  <xacro:property name="tof_y" value="0.014"/>            <!-- Left (positive Y in ROS) -->
-  <xacro:property name="tof_z" value="0.081"/>            <!-- Up from base_link -->
+  <xacro:property name="tof_x" value="0.13"/>             <!-- 13 cm Forward -->
+  <xacro:property name="tof_y" value="0.014"/>            <!-- 1.4 cm Left (positive Y in ROS) -->
+  <xacro:property name="tof_z" value="0.078"/>            <!-- 7.8 cm Up from base_link -->
   <xacro:property name="tof_roll" value="0.0"/>           <!-- No roll -->
-  <xacro:property name="tof_pitch" value="-0.2751"/>      <!-- -15.76° = -0.2751 rad -->
+  <xacro:property name="tof_pitch" value="-0.2751"/>      <!-- -15.76° = -0.2751 rad Tilted down slightly-->
   <xacro:property name="tof_yaw" value="0.0"/>            <!-- No yaw, facing forward -->
   
   <!-- ===== IMU MOUNT (MPU6050) ===== -->
@@ -49,7 +49,7 @@
   <!-- Centered, 4. 5cm up -->
   <xacro:property name="imu_x" value="0.0"/>              <!-- Centered -->
   <xacro:property name="imu_y" value="0.0"/>              <!-- Centered -->
-  <xacro:property name="imu_z" value="0.045"/>            <!-- 4.5cm up -->
+  <xacro:property name="imu_z" value="0.046"/>            <!-- 4.6cm up -->
   <xacro:property name="imu_roll" value="0.0"/>           <!-- No roll -->
   <xacro:property name="imu_pitch" value="0.0"/>          <!-- No pitch -->
   <xacro:property name="imu_yaw" value="0.0"/>            <!-- No yaw (X forward, Y left, Z up) -->
@@ -146,13 +146,13 @@
   <link name="camera_link">
     <visual>
       <geometry>
-        <box size="0.025 0.025 0.025"/>
+        <box size="0.009 0.025 0.024"/>
       </geometry>
       <material name="blue"/>
     </visual>
     <collision>
       <geometry>
-        <box size="0.025 0.025 0.025"/>
+        <box size="0.009 0.025 0.024"/>
       </geometry>
     </collision>
   </link>
@@ -164,13 +164,13 @@
   <link name="tof_link">
     <visual>
       <geometry>
-        <box size="0.02 0.035 0.02"/>
+        <box size="0.030 0.050 0.050"/>
       </geometry>
       <material name="green"/>
     </visual>
     <collision>
       <geometry>
-        <box size="0.02 0.035 0.02"/>
+        <box size="0.030 0.050 0.050"/>
       </geometry>
     </collision>
   </link>
@@ -182,7 +182,7 @@
   <link name="imu_link">
     <visual>
       <geometry>
-        <box size="0.02 0.016 0.003"/>
+        <box size="0.018 0.025 0.005"/>
       </geometry>
       <material name="red"/>
     </visual>
