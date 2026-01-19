@@ -1,0 +1,35 @@
+"""Launch file for waypoint manager."""
+
+from launch import LaunchDescription
+from launch. actions import DeclareLaunchArgument
+from launch.substitutions import LaunchConfiguration
+from launch_ros.actions import Node
+from ament_index_python. packages import get_package_share_directory
+import os
+
+
+def generate_launch_description():
+    pkg_dir = get_package_share_directory('waypoint_manager')
+    default_config = os.path.join(pkg_dir, 'config', 'waypoint_params.yaml')
+    
+    return LaunchDescription([
+        DeclareLaunchArgument('config_file', default_value=default_config),
+        DeclareLaunchArgument('enable_recorder', default_value='true'),
+        DeclareLaunchArgument('enable_follower', default_value='true'),
+        
+        Node(
+            package='waypoint_manager',
+            executable='waypoint_recorder_node. py',
+            name='waypoint_recorder_node',
+            output='screen',
+            parameters=[LaunchConfiguration('config_file')],
+        ),
+        
+        Node(
+            package='waypoint_manager',
+            executable='waypoint_follower_node. py',
+            name='waypoint_follower_node',
+            output='screen',
+            parameters=[LaunchConfiguration('config_file')],
+        ),
+    ])
