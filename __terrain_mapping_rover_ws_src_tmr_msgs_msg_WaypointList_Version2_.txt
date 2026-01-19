@@ -1,0 +1,7 @@
+# List of recorded waypoints
+std_msgs/Header header
+
+string mission_id         # Mission identifier
+geometry_msgs/PoseStamped[] waypoints
+string[] waypoint_labels  # Optional labels for each waypoint
+string[] trigger_types    # "TIME", "DISTANCE", "EVENT" for each

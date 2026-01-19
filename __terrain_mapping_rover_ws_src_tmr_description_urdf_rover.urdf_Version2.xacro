@@ -1,0 +1,267 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="terrain_mapping_rover">
+  
+  <!-- ===================================================================== -->
+  <!-- ROBOT PARAMETERS - Edit these based on your measurements/calibration  -->
+  <!-- ===================================================================== -->
+  
+  <!-- All measurements in meters, angles in radians -->
+  <!-- PI constant -->
+  <xacro:property name="pi" value="3.14159265359"/>
+  
+  <!-- ===== ROVER BODY DIMENSIONS ===== -->
+  <xacro:property name="rover_length" value="0.28"/>      <!-- 28 cm (X direction) -->
+  <xacro:property name="rover_width" value="0.36"/>       <!-- 36 cm (Y direction) -->
+  <xacro:property name="rover_height" value="0.15"/>      <!-- Approximate body height (Z) -->
+  
+  <!-- ===== WHEEL PARAMETERS ===== -->
+  <xacro:property name="wheel_radius" value="0.0508"/>    <!-- 2 inches = 0.0508 m -->
+  <xacro:property name="wheel_width" value="0.04"/>       <!-- Approximate wheel width -->
+  <xacro: property name="track_width" value="0.295"/>      <!-- Distance between wheel centers -->
+  <xacro:property name="wheelbase" value="0.20"/>         <!-- Distance between front/back axles -->
+  
+  <!-- ===== BASE_LINK HEIGHT ===== -->
+  <!-- base_link is at center of rotation, 2 inches above ground -->
+  <xacro:property name="base_link_height" value="0.0508"/> <!-- 2 inches = 0.0508 m -->
+  
+  <!-- ===== CAMERA MOUNT (IMX500) ===== -->
+  <!-- Position relative to base_link -->
+  <!-- 13. 5cm forward, 2.75cm right, 8.1cm up, -15.76° pitch -->
+  <xacro: property name="camera_x" value="0.135"/>         <!-- Forward -->
+  <xacro:property name="camera_y" value="-0.0275"/>       <!-- Right (negative Y in ROS) -->
+  <xacro:property name="camera_z" value="0.081"/>         <!-- Up from base_link -->
+  <xacro:property name="camera_roll" value="0.0"/>        <!-- No roll -->
+  <xacro:property name="camera_pitch" value="-0.2751"/>   <!-- -15.76° = -0.2751 rad -->
+  <xacro:property name="camera_yaw" value="0.0"/>         <!-- No yaw, facing forward -->
+  
+  <!-- ===== TOF CAMERA MOUNT (Arducam B0410) ===== -->
+  <!-- Position relative to base_link -->
+  <!-- 13.5cm forward, 1.4cm left, 8.1cm up, -15.76° pitch -->
+  <xacro:property name="tof_x" value="0.135"/>            <!-- Forward -->
+  <xacro:property name="tof_y" value="0.014"/>            <!-- Left (positive Y in ROS) -->
+  <xacro:property name="tof_z" value="0.081"/>            <!-- Up from base_link -->
+  <xacro:property name="tof_roll" value="0.0"/>           <!-- No roll -->
+  <xacro:property name="tof_pitch" value="-0.2751"/>      <!-- -15.76° = -0.2751 rad -->
+  <xacro:property name="tof_yaw" value="0.0"/>            <!-- No yaw, facing forward -->
+  
+  <!-- ===== IMU MOUNT (MPU6050) ===== -->
+  <!-- Position relative to base_link -->
+  <!-- Centered, 4. 5cm up -->
+  <xacro:property name="imu_x" value="0.0"/>              <!-- Centered -->
+  <xacro:property name="imu_y" value="0.0"/>              <!-- Centered -->
+  <xacro:property name="imu_z" value="0.045"/>            <!-- 4.5cm up -->
+  <xacro:property name="imu_roll" value="0.0"/>           <!-- No roll -->
+  <xacro:property name="imu_pitch" value="0.0"/>          <!-- No pitch -->
+  <xacro:property name="imu_yaw" value="0.0"/>            <!-- No yaw (X forward, Y left, Z up) -->
+  
+  <!-- ===================================================================== -->
+  <!-- VISUAL/COLLISION MATERIALS                                            -->
+  <!-- ===================================================================== -->
+  
+  <material name="dark_gray">
+    <color rgba="0.3 0.3 0.3 1.0"/>
+  </material>
+  
+  <material name="light_gray">
+    <color rgba="0.6 0.6 0.6 1.0"/>
+  </material>
+  
+  <material name="blue">
+    <color rgba="0.0 0.0 0.8 1.0"/>
+  </material>
+  
+  <material name="green">
+    <color rgba="0.0 0.8 0.0 1.0"/>
+  </material>
+  
+  <material name="red">
+    <color rgba="0.8 0.0 0.0 1.0"/>
+  </material>
+  
+  <material name="black">
+    <color rgba="0.1 0.1 0.1 1.0"/>
+  </material>
+  
+  <!-- ===================================================================== -->
+  <!-- LINKS                                                                  -->
+  <!-- ===================================================================== -->
+  
+  <!-- Base footprint - on the ground plane, used for 2D navigation -->
+  <link name="base_footprint">
+    <visual>
+      <geometry>
+        <box size="0.01 0.01 0.001"/>
+      </geometry>
+      <material name="red"/>
+    </visual>
+  </link>
+  
+  <!-- Base link - center of robot, center of rotation -->
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <box size="${rover_length} ${rover_width} ${rover_height}"/>
+      </geometry>
+      <origin xyz="0 0 ${rover_height/2}" rpy="0 0 0"/>
+      <material name="dark_gray"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="${rover_length} ${rover_width} ${rover_height}"/>
+      </geometry>
+      <origin xyz="0 0 ${rover_height/2}" rpy="0 0 0"/>
+    </collision>
+    <inertial>
+      <mass value="5. 0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.05" ixy="0" ixz="0" iyy="0.05" iyz="0" izz="0.05"/>
+    </inertial>
+  </link>
+  
+  <!-- Wheel links (for visualization) -->
+  <xacro:macro name="wheel_link" params="name">
+    <link name="${name}">
+      <visual>
+        <geometry>
+          <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+        </geometry>
+        <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+        <material name="black"/>
+      </visual>
+      <collision>
+        <geometry>
+          <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+        </geometry>
+        <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+      </collision>
+    </link>
+  </xacro:macro>
+  
+  <xacro:wheel_link name="front_left_wheel"/>
+  <xacro:wheel_link name="front_right_wheel"/>
+  <xacro:wheel_link name="back_left_wheel"/>
+  <xacro:wheel_link name="back_right_wheel"/>
+  
+  <!-- Camera link (IMX500) -->
+  <link name="camera_link">
+    <visual>
+      <geometry>
+        <box size="0.025 0.025 0.025"/>
+      </geometry>
+      <material name="blue"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.025 0.025 0.025"/>
+      </geometry>
+    </collision>
+  </link>
+  
+  <!-- Camera optical frame (Z forward, X right, Y down) -->
+  <link name="camera_optical_frame"/>
+  
+  <!-- ToF camera link -->
+  <link name="tof_link">
+    <visual>
+      <geometry>
+        <box size="0.02 0.035 0.02"/>
+      </geometry>
+      <material name="green"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.02 0.035 0.02"/>
+      </geometry>
+    </collision>
+  </link>
+  
+  <!-- ToF optical frame -->
+  <link name="tof_optical_frame"/>
+  
+  <!-- IMU link -->
+  <link name="imu_link">
+    <visual>
+      <geometry>
+        <box size="0.02 0.016 0.003"/>
+      </geometry>
+      <material name="red"/>
+    </visual>
+  </link>
+  
+  <!-- ===================================================================== -->
+  <!-- JOINTS                                                                 -->
+  <!-- ===================================================================== -->
+  
+  <!-- base_footprint to base_link (vertical offset) -->
+  <joint name="base_footprint_to_base_link" type="fixed">
+    <parent link="base_footprint"/>
+    <child link="base_link"/>
+    <origin xyz="0 0 ${base_link_height}" rpy="0 0 0"/>
+  </joint>
+  
+  <!-- Wheel joints (fixed for visualization - actual motion is via odom) -->
+  <joint name="front_left_wheel_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="front_left_wheel"/>
+    <origin xyz="${wheelbase/2} ${track_width/2} ${-base_link_height + wheel_radius}" rpy="0 0 0"/>
+  </joint>
+  
+  <joint name="front_right_wheel_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="front_right_wheel"/>
+    <origin xyz="${wheelbase/2} ${-track_width/2} ${-base_link_height + wheel_radius}" rpy="0 0 0"/>
+  </joint>
+  
+  <joint name="back_left_wheel_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="back_left_wheel"/>
+    <origin xyz="${-wheelbase/2} ${track_width/2} ${-base_link_height + wheel_radius}" rpy="0 0 0"/>
+  </joint>
+  
+  <joint name="back_right_wheel_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="back_right_wheel"/>
+    <origin xyz="${-wheelbase/2} ${-track_width/2} ${-base_link_height + wheel_radius}" rpy="0 0 0"/>
+  </joint>
+  
+  <!-- base_link to camera_link -->
+  <joint name="base_link_to_camera" type="fixed">
+    <parent link="base_link"/>
+    <child link="camera_link"/>
+    <origin xyz="${camera_x} ${camera_y} ${camera_z}" 
+            rpy="${camera_roll} ${camera_pitch} ${camera_yaw}"/>
+  </joint>
+  
+  <!-- camera_link to camera_optical_frame -->
+  <!-- Optical frame convention: Z forward, X right, Y down -->
+  <!-- This is a -90° rotation about Z, then -90° rotation about X -->
+  <joint name="camera_to_optical" type="fixed">
+    <parent link="camera_link"/>
+    <child link="camera_optical_frame"/>
+    <origin xyz="0 0 0" rpy="${-pi/2} 0 ${-pi/2}"/>
+  </joint>
+  
+  <!-- base_link to tof_link -->
+  <joint name="base_link_to_tof" type="fixed">
+    <parent link="base_link"/>
+    <child link="tof_link"/>
+    <origin xyz="${tof_x} ${tof_y} ${tof_z}" 
+            rpy="${tof_roll} ${tof_pitch} ${tof_yaw}"/>
+  </joint>
+  
+  <!-- tof_link to tof_optical_frame -->
+  <joint name="tof_to_optical" type="fixed">
+    <parent link="tof_link"/>
+    <child link="tof_optical_frame"/>
+    <origin xyz="0 0 0" rpy="${-pi/2} 0 ${-pi/2}"/>
+  </joint>
+  
+  <!-- base_link to imu_link -->
+  <joint name="base_link_to_imu" type="fixed">
+    <parent link="base_link"/>
+    <child link="imu_link"/>
+    <origin xyz="${imu_x} ${imu_y} ${imu_z}" 
+            rpy="${imu_roll} ${imu_pitch} ${imu_yaw}"/>
+  </joint>
+
+</robot>

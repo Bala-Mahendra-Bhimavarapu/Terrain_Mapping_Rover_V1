@@ -1,0 +1,5 @@
+# Clear emergency stop (requires manual confirmation)
+string confirmation_code  # Must be "CONFIRM_CLEAR_ESTOP"
+---
+bool success
+string message

@@ -1,0 +1,10 @@
+# Status of cross-rover data synchronization
+std_msgs/Header header
+
+string status             # "IDLE", "SYNCING", "OK", "RETRY", "FAILED"
+string remote_rover_id    # ID of remote rover/base station
+builtin_interfaces/Time last_sync_time
+uint32 map_nodes_sent     # Number of map nodes transferred
+uint32 waypoints_sent     # Number of waypoints transferred
+uint32 landmarks_sent     # Number of landmarks transferred
+string last_error         # Last error message, if any

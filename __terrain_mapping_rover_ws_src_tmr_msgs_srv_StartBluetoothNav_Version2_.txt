@@ -1,0 +1,6 @@
+# Start Bluetooth beacon navigation
+string beacon_uuid        # UUID to search for (empty = use default)
+int32 rssi_threshold      # RSSI threshold for "reached" (0 = use default)
+---
+bool success
+string message

@@ -1,0 +1,7 @@
+# Request to manually record a waypoint
+string label              # Optional label for the waypoint
+string trigger_type       # "MANUAL", "EVENT"
+---
+bool success
+string waypoint_id
+geometry_msgs/PoseStamped pose

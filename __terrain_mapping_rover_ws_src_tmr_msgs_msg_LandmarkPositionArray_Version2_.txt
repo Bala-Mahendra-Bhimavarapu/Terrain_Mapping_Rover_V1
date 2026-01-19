@@ -1,0 +1,3 @@
+# Array of 3D landmark positions
+std_msgs/Header header
+tmr_msgs/LandmarkPosition[] landmarks
