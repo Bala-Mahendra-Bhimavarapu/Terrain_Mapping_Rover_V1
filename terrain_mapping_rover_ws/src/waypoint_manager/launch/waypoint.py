@@ -19,7 +19,7 @@ def generate_launch_description():
         
         Node(
             package='waypoint_manager',
-            executable='waypoint_recorder_node. py',
+            executable='waypoint_recorder_node.py',
             name='waypoint_recorder_node',
             output='screen',
             parameters=[LaunchConfiguration('config_file')],
@@ -27,7 +27,7 @@ def generate_launch_description():
         
         Node(
             package='waypoint_manager',
-            executable='waypoint_follower_node. py',
+            executable='waypoint_follower_node.py',
             name='waypoint_follower_node',
             output='screen',
             parameters=[LaunchConfiguration('config_file')],
