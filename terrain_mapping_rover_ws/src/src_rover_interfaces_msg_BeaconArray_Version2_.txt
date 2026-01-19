@@ -1,5 +1,0 @@
-# Array of detected Bluetooth beacons
-std_msgs/Header header
-
-BeaconSignal[] beacons              # All detected beacons
-uint32 scan_duration_ms             # How long the scan took
