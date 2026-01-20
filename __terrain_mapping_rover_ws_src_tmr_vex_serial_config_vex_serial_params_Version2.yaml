@@ -1,0 +1,66 @@
+# =============================================================================
+# VEX Serial Node Parameters
+# =============================================================================
+
+vex_serial_node:
+  ros__parameters:
+    # =========================================================================
+    # Serial Communication
+    # =========================================================================
+    
+    # Serial port for VEX V5 Brain
+    # Common options:  /dev/ttyACM0, /dev/ttyACM1, /dev/vex_v5 (if udev rule set)
+    serial_port: "/dev/ttyACM0"
+    
+    # Baud rate - must match VEX program
+    baud_rate: 115200
+
+    # =========================================================================
+    # Robot Physical Parameters
+    # =========================================================================
+    
+    # Wheel radius in meters
+    # 4" omni wheels = 0.0508 m
+    wheel_radius_m: 0.0508
+    
+    # Track width (distance between left and right wheels) in meters
+    # Measure center-to-center of wheels
+    track_width_m:  0.295
+    
+    # Encoder ticks per wheel revolution
+    # VEX V5 motors with 36: 1 cartridge:  1800 ticks/rev at output
+    # Adjust based on your gear ratio
+    ticks_per_revolution: 900
+
+    # =========================================================================
+    # Velocity Limits
+    # =========================================================================
+    
+    # Maximum linear velocity in m/s
+    # Calculated based on motor speed and wheel size
+    max_linear_velocity_ms: 0.3
+    
+    # Maximum angular velocity in rad/s
+    max_angular_velocity_rads:  0.25
+
+    # =========================================================================
+    # Frame IDs
+    # =========================================================================
+    
+    # Odometry frame
+    odom_frame: "odom"
+    
+    # Robot base frame
+    base_frame: "base_link"
+
+    # =========================================================================
+    # Control Parameters
+    # =========================================================================
+    
+    # Whether to publish odom->base_link TF
+    # Set to false when using EKF (EKF publishes this transform)
+    publish_tf: false
+    
+    # Timeout for cmd_vel commands (seconds)
+    # If no cmd_vel received within this time, motors stop
+    cmd_vel_timeout:  0.
