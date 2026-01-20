@@ -140,7 +140,7 @@ class ArducamToFDriver:
             self.camera = ac.ArducamCamera()
             
             # Open camera
-            ret = self.camera.open(ac.TOFConnect. CSI, self.device_id)
+            ret = self.camera.open(ac.TOFConnect.CSI, self.device_id)
             if ret != 0:
                 print(f"Failed to open ToF camera: error {ret}")
                 self.connected = False
@@ -155,13 +155,13 @@ class ArducamToFDriver:
                 return False
             
             # Set depth mode
-            self._set_depth_mode(self. depth_mode)
+            self._set_depth_mode(self.depth_mode)
             
             # Get camera info
             info = self.camera.getCameraInfo()
             print(f"ToF Camera Info:")
             print(f"  Resolution: {info.width}x{info.height}")
-            print(f"  Depth Mode: {self.depth_mode. value}")
+            print(f"  Depth Mode: {self.depth_mode.value}")
             
             self.connected = True
             return True
