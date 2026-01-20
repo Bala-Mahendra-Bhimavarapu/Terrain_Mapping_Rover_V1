@@ -1,0 +1,121 @@
+# =============================================================================
+# MPU6050 IMU Driver Configuration
+# =============================================================================
+#
+# Configuration for the MPU6050 6-axis IMU connected via I2C to Raspberry Pi 5
+#
+# =============================================================================
+
+imu_node:
+  ros__parameters:
+    # =========================================================================
+    # I2C Configuration
+    # =========================================================================
+    
+    # I2C bus number (usually 1 on Raspberry Pi)
+    i2c_bus:  1
+    
+    # I2C address of MPU6050
+    # Default is 0x68, can be 0x69 if AD0 pin is HIGH
+    i2c_address:  0x68
+    
+    # =========================================================================
+    # Publishing Configuration
+    # =========================================================================
+    
+    # IMU data publish rate in Hz
+    # MPU6050 can output up to 1000 Hz, but 100-200 Hz is typical
+    publish_rate_hz: 100.0
+    
+    # Frame ID for IMU messages
+    frame_id: "imu_link"
+    
+    # =========================================================================
+    # Sensor Configuration
+    # =========================================================================
+    
+    # Accelerometer full scale range
+    # Options: 2, 4, 8, 16 (in g)
+    # Lower = more precision, higher = more range
+    accel_range_g: 2
+    
+    # Gyroscope full scale range
+    # Options: 250, 500, 1000, 2000 (in degrees/sec)
+    # Lower = more precision, higher = more range
+    gyro_range_dps: 250
+    
+    # Digital Low Pass Filter (DLPF) setting
+    # Options: 0-6, lower = more filtering, higher bandwidth
+    # 0: 260 Hz, 1: 184 Hz, 2: 94 Hz, 3: 44 Hz, 4: 21 Hz, 5: 10 Hz, 6: 5 Hz
+    dlpf_mode: 3
+    
+    # =========================================================================
+    # Calibration
+    # =========================================================================
+    
+    # Whether to perform auto-calibration on startup
+    # Robot must be stationary during calibration! 
+    auto_calibrate: true
+    
+    # Number of samples for calibration
+    calibration_samples: 500
+    
+    # Pre-defined calibration offsets (used if auto_calibrate is false)
+    # These should be determined by running the calibration tool
+    accel_offset_x: 0.0
+    accel_offset_y: 0.0
+    accel_offset_z:  0.0
+    gyro_offset_x: 0.0
+    gyro_offset_y: 0.0
+    gyro_offset_z:  0.0
+    
+    # =========================================================================
+    # Filtering
+    # =========================================================================
+    
+    # Enable complementary filter for orientation estimation
+    use_complementary_filter: true
+    
+    # Complementary filter alpha (0-1)
+    # Higher = trust gyro more, lower = trust accelerometer more
+    complementary_alpha: 0.98
+    
+    # Enable moving average filter on raw data
+    use_moving_average:  false
+    moving_average_window:  5
+    
+    # =========================================================================
+    # Covariance
+    # =========================================================================
+    
+    # Orientation covariance (rad^2)
+    # Set to -1 if orientation is not provided
+    orientation_covariance:  [0.01, 0.0, 0.0,
+                             0.0, 0.01, 0.0,
+                             0.0, 0.0, 0.01]
+    
+    # Angular velocity covariance (rad/s)^2
+    angular_velocity_covariance: [0.001, 0.0, 0.0,
+                                   0.0, 0.001, 0.0,
+                                   0.0, 0.0, 0.001]
+    
+    # Linear acceleration covariance (m/s^2)^2
+    linear_acceleration_covariance: [0.01, 0.0, 0.0,
+                                      0.0, 0.01, 0.0,
+                                      0.0, 0.0, 0.01]
+    
+    # =========================================================================
+    # Diagnostics
+    # =========================================================================
+    
+    # Enable diagnostic publishing
+    publish_diagnostics: true
+    
+    # Diagnostic publish rate (Hz)
+    diagnostics_rate_hz: 1.0
+    
+    # Temperature warning threshold (Celsius)
+    temperature_warning_c: 60.0
+    
+    # Data rate warning threshold (as fraction of expected rate)
+    rate_warning_threshold:  0.9

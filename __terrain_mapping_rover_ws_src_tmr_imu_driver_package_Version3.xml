@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<? xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>tmr_imu_driver</name>
+  <version>1.0.0</version>
+  <description>MPU6050 IMU driver for Terrain Mapping Rover</description>
+  <maintainer email="user@todo. todo">Bala</maintainer>
+  <license>MIT</license>
+
+  <!-- This specifies it's a Python package - NO CMakeLists.txt needed -->
+  <buildtool_depend>ament_python</buildtool_depend>
+
+  <!-- ROS 2 dependencies -->
+  <depend>rclpy</depend>
+  <depend>std_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>std_srvs</depend>
+  <depend>diagnostic_msgs</depend>
+  <depend>tf2_ros</depend>
+
+  <!-- Python dependencies -->
+  <exec_depend>python3-smbus2</exec_depend>
+  <exec_depend>python3-numpy</exec_depend>
+
+  <!-- Test dependencies -->
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+  <test_depend>python3-pytest</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>
