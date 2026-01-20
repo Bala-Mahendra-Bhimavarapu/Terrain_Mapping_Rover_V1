@@ -1,0 +1,402 @@
+"""
+Arducam ToF Camera Driver
+
+Low-level driver for the Arducam B0410 Time-of-Flight camera. 
+
+The B0410 uses the Sony IMX316 ToF sensor and provides:
+- Depth images (distance measurement)
+- Confidence images (measurement quality)
+- Amplitude/intensity images (IR reflection strength)
+
+Hardware connections:
+- CSI connector on Raspberry Pi 5
+- Requires Arducam ToF SDK/library
+
+Depth Modes:
+- Near: 0.2m - 1.2m (high precision for close objects)
+- Middle: 0.5m - 3m (balanced mode)
+- Far: 1m - 4m (extended range)
+"""
+
+import time
+import threading
+import numpy as np
+from typing import Optional, Tuple, Callable, Dict, Any
+from dataclasses import dataclass
+from enum import Enum
+
+# Try to import ArduCam ToF library
+try:
+    import ArducamDepthCamera as ac
+    ARDUCAM_TOF_AVAILABLE = True
+except ImportError:
+    ARDUCAM_TOF_AVAILABLE = False
+    print("WARNING: ArducamDepthCamera not available.  Using mock mode.")
+
+
+class DepthMode(Enum):
+    """ToF camera depth modes"""
+    NEAR = "near"       # 0.2m - 1.2m
+    MIDDLE = "middle"   # 0.5m - 3. 0m
+    FAR = "far"         # 1.0m - 4.0m
+
+
+@dataclass
+class ToFFrame:
+    """Container for ToF camera frame data"""
+    depth_image: np.ndarray         # Depth in millimeters (uint16)
+    confidence_image: np.ndarray    # Confidence 0-255 (uint8)
+    amplitude_image: np. ndarray     # IR amplitude (uint16)
+    timestamp: float                # Capture timestamp
+    sequence:  int                   # Frame sequence number
+    depth_scale: float              # Scale factor to convert to meters
+
+
+class ArducamToFDriver: 
+    """
+    Driver for Arducam B0410 ToF Camera. 
+    
+    Provides interface for: 
+    - Depth, confidence, and amplitude image capture
+    - Multiple depth modes
+    - Frame streaming with callback
+    """
+    
+    # Camera specifications
+    WIDTH = 240
+    HEIGHT = 180
+    
+    # Depth mode configurations
+    MODE_CONFIG = {
+        DepthMode.NEAR: {
+            'range_min': 0.2,
+            'range_max': 1.2,
+            'mode_value': 0,
+        },
+        DepthMode. MIDDLE: {
+            'range_min': 0.5,
+            'range_max': 3.0,
+            'mode_value': 1,
+        },
+        DepthMode. FAR: {
+            'range_min': 1.0,
+            'range_max': 4.0,
+            'mode_value': 2,
+        },
+    }
+    
+    def __init__(
+        self,
+        device_id: int = 0,
+        depth_mode: DepthMode = DepthMode.NEAR,
+        frame_rate: float = 15.0
+    ):
+        """
+        Initialize ToF camera driver.
+        
+        Args:
+            device_id:  Camera device ID
+            depth_mode: Depth mode (near, middle, far)
+            frame_rate: Target frame rate
+        """
+        self.device_id = device_id
+        self.depth_mode = depth_mode
+        self.frame_rate = frame_rate
+        
+        self.camera = None
+        self.connected = False
+        self.streaming = False
+        
+        # Frame state
+        self.frame_count = 0
+        self.last_frame_time = 0.0
+        self.actual_frame_rate = 0.0
+        
+        # Streaming
+        self.stream_thread: Optional[threading.Thread] = None
+        self.stream_callback: Optional[Callable[[ToFFrame], None]] = None
+        self.stop_stream = threading.Event()
+        
+        # Lock for thread safety
+        self.lock = threading.Lock()
+        
+        # Depth scale (mm to m)
+        self.depth_scale = 0.001
+    
+    def connect(self) -> bool:
+        """
+        Connect to the ToF camera.
+        
+        Returns:
+            True if connection successful
+        """
+        if not ARDUCAM_TOF_AVAILABLE:
+            print("WARNING: ArducamDepthCamera not available, using mock mode")
+            self.connected = True
+            return True
+        
+        try:
+            # Initialize camera
+            self.camera = ac.ArducamCamera()
+            
+            # Open camera
+            ret = self.camera.open(ac.TOFConnect. CSI, self.device_id)
+            if ret != 0:
+                print(f"Failed to open ToF camera: error {ret}")
+                self.connected = False
+                return False
+            
+            # Start camera
+            ret = self.camera. start(ac.TOFOutput.DEPTH)
+            if ret != 0:
+                print(f"Failed to start ToF camera: error {ret}")
+                self.camera.close()
+                self.connected = False
+                return False
+            
+            # Set depth mode
+            self._set_depth_mode(self. depth_mode)
+            
+            # Get camera info
+            info = self.camera.getCameraInfo()
+            print(f"ToF Camera Info:")
+            print(f"  Resolution: {info.width}x{info.height}")
+            print(f"  Depth Mode: {self.depth_mode. value}")
+            
+            self.connected = True
+            return True
+            
+        except Exception as e:
+            print(f"Failed to connect to ToF camera: {e}")
+            self.connected = False
+            return False
+    
+    def disconnect(self):
+        """Disconnect from camera"""
+        self.stop_streaming()
+        
+        if self.camera is not None and ARDUCAM_TOF_AVAILABLE:
+            try:
+                self.camera.stop()
+                self.camera.close()
+            except Exception: 
+                pass
+            self.camera = None
+        
+        self.connected = False
+    
+    def _set_depth_mode(self, mode: DepthMode):
+        """Set camera depth mode"""
+        if not ARDUCAM_TOF_AVAILABLE or self.camera is None:
+            return
+        
+        try:
+            config = self.MODE_CONFIG[mode]
+            # Set mode through camera control
+            self.camera.setControl(ac.TOFControl.RANG, config['mode_value'])
+            self.depth_mode = mode
+        except Exception as e:
+            print(f"Failed to set depth mode: {e}")
+    
+    def set_depth_mode(self, mode: DepthMode):
+        """
+        Change depth mode.
+        
+        Args:
+            mode: New depth mode
+        """
+        self. depth_mode = mode
+        if self.connected:
+            self._set_depth_mode(mode)
+    
+    def capture(self) -> Optional[ToFFrame]: 
+        """
+        Capture a single frame.
+        
+        Returns:
+            ToFFrame with depth, confidence, and amplitude data
+        """
+        if not self.connected:
+            return None
+        
+        try:
+            with self.lock:
+                if not ARDUCAM_TOF_AVAILABLE: 
+                    return self._create_mock_frame()
+                
+                # Request frame
+                frame = self.camera.requestFrame(200)  # 200ms timeout
+                
+                if frame is None:
+                    return None
+                
+                # Get depth data
+                depth_buf = frame.getDepthData()
+                depth_image = np.array(depth_buf, dtype=np.float32).reshape(
+                    self.HEIGHT, self.WIDTH)
+                
+                # Convert to millimeters (uint16)
+                depth_mm = (depth_image * 1000).astype(np.uint16)
+                
+                # Get confidence data
+                confidence_buf = frame. getConfidenceData()
+                confidence_image = np.array(confidence_buf, dtype=np. float32).reshape(
+                    self.HEIGHT, self.WIDTH)
+                confidence_uint8 = (confidence_image * 255).astype(np.uint8)
+                
+                # Get amplitude data
+                amplitude_buf = frame.getAmplitudeData()
+                amplitude_image = np.array(amplitude_buf, dtype=np. float32).reshape(
+                    self.HEIGHT, self.WIDTH)
+                amplitude_uint16 = amplitude_image. astype(np.uint16)
+                
+                # Release frame
+                self.camera.releaseFrame(frame)
+                
+                # Create ToFFrame
+                tof_frame = ToFFrame(
+                    depth_image=depth_mm,
+                    confidence_image=confidence_uint8,
+                    amplitude_image=amplitude_uint16,
+                    timestamp=time.time(),
+                    sequence=self.frame_count,
+                    depth_scale=self. depth_scale
+                )
+                
+                # Update stats
+                self.frame_count += 1
+                current_time = time.time()
+                if self.last_frame_time > 0:
+                    dt = current_time - self.last_frame_time
+                    if dt > 0:
+                        self.actual_frame_rate = 0.9 * self.actual_frame_rate + 0.1 * (1.0 / dt)
+                self.last_frame_time = current_time
+                
+                return tof_frame
+                
+        except Exception as e:
+            print(f"Capture failed: {e}")
+            return None
+    
+    def _create_mock_frame(self) -> ToFFrame:
+        """Create mock frame for testing without hardware"""
+        # Create synthetic depth image (gradient + some objects)
+        depth_mm = np.zeros((self.HEIGHT, self.WIDTH), dtype=np.uint16)
+        
+        # Background depth gradient
+        for y in range(self.HEIGHT):
+            depth_mm[y, : ] = 500 + int(y * 10)  # 500mm to ~2300mm
+        
+        # Add some "objects" (circles at different depths)
+        cv2_available = False
+        try:
+            import cv2
+            cv2_available = True
+        except ImportError:
+            pass
+        
+        if cv2_available:
+            import cv2
+            # Object 1: close sphere
+            cv2.circle(depth_mm, (60, 90), 30, 300, -1)
+            # Object 2: mid-range sphere
+            cv2.circle(depth_mm, (180, 90), 25, 800, -1)
+        
+        # Add some noise
+        noise = np.random.normal(0, 10, depth_mm.shape).astype(np.int16)
+        depth_mm = np.clip(depth_mm. astype(np.int32) + noise, 100, 4000).astype(np.uint16)
+        
+        # Create confidence image (higher for closer objects)
+        confidence = np.clip(255 - (depth_mm / 20), 30, 255).astype(np.uint8)
+        
+        # Create amplitude image
+        amplitude = (np.clip(10000 - depth_mm * 2, 0, 65535)).astype(np.uint16)
+        
+        self.frame_count += 1
+        
+        return ToFFrame(
+            depth_image=depth_mm,
+            confidence_image=confidence,
+            amplitude_image=amplitude,
+            timestamp=time.time(),
+            sequence=self.frame_count,
+            depth_scale=self.depth_scale
+        )
+    
+    def start_streaming(self, callback:  Callable[[ToFFrame], None]):
+        """
+        Start continuous frame streaming.
+        
+        Args:
+            callback: Function called for each captured frame
+        """
+        if self.stream_thread is not None and self.stream_thread.is_alive():
+            return
+        
+        self.stream_callback = callback
+        self.stop_stream.clear()
+        
+        self.stream_thread = threading.Thread(target=self._stream_loop, daemon=True)
+        self.stream_thread.start()
+    
+    def stop_streaming(self):
+        """Stop continuous streaming"""
+        self.stop_stream.set()
+        
+        if self.stream_thread is not None:
+            self.stream_thread.join(timeout=2.0)
+            self.stream_thread = None
+    
+    def _stream_loop(self):
+        """Internal streaming loop"""
+        frame_interval = 1.0 / self.frame_rate
+        
+        while not self.stop_stream. is_set():
+            start_time = time.time()
+            
+            frame = self.capture()
+            
+            if frame is not None and self.stream_callback is not None:
+                try:
+                    self.stream_callback(frame)
+                except Exception as e:
+                    print(f"Stream callback error: {e}")
+            
+            # Maintain frame rate
+            elapsed = time.time() - start_time
+            sleep_time = frame_interval - elapsed
+            if sleep_time > 0:
+                time.sleep(sleep_time)
+    
+    def get_depth_range(self) -> Tuple[float, float]:
+        """
+        Get depth range for current mode.
+        
+        Returns:
+            Tuple of (min_depth, max_depth) in meters
+        """
+        config = self.MODE_CONFIG[self.depth_mode]
+        return (config['range_min'], config['range_max'])
+    
+    def get_frame_rate(self) -> float:
+        """Get actual measured frame rate"""
+        return self.actual_frame_rate
+    
+    def get_frame_count(self) -> int:
+        """Get total frames captured"""
+        return self.frame_count
+    
+    @property
+    def resolution(self) -> Tuple[int, int]:
+        """Get camera resolution (width, height)"""
+        return (self.WIDTH, self.HEIGHT)
+    
+    def __enter__(self):
+        """Context manager entry"""
+        self.connect()
+        return self
+    
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Context manager exit"""
+        self. disconnect()
+        return False

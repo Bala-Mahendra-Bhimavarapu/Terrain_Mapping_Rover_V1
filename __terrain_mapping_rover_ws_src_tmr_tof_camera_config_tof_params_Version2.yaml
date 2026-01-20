@@ -1,0 +1,148 @@
+# =============================================================================
+# Arducam ToF Camera (B0410) Driver Configuration
+# =============================================================================
+#
+# Configuration for the Arducam Time-of-Flight depth camera connected via CSI
+#
+# The Arducam B0410 is a ToF camera based on the Sony IMX316 sensor: 
+# - Resolution: 240 x 180 pixels
+# - Depth Range: 0.2m - 4m
+# - Field of View: 70° x 50°
+# - Frame Rate: Up to 30 fps
+# - Interface:  MIPI CSI-2
+#
+# =============================================================================
+
+tof_camera_node:
+  ros__parameters:
+    # =========================================================================
+    # Camera Identification
+    # =========================================================================
+    
+    # Camera device ID (usually 0 for single camera)
+    device_id: 0
+    
+    # Frame ID for ToF sensor messages
+    frame_id: "tof_optical_frame"
+    
+    # Camera name (used for topics and calibration)
+    camera_name: "tof_camera"
+    
+    # =========================================================================
+    # Sensor Configuration
+    # =========================================================================
+    
+    # Depth mode
+    # Options: "near" (0.2-1.2m), "middle" (0.5-3m), "far" (1-4m)
+    depth_mode: "near"
+    
+    # Target frame rate (fps)
+    # ToF cameras typically run at 15-30 fps
+    frame_rate: 15.0
+    
+    # Confidence threshold (0-255)
+    # Pixels with confidence below this are marked invalid
+    confidence_threshold: 30
+    
+    # =========================================================================
+    # Output Configuration
+    # =========================================================================
+    
+    # Publish depth image
+    publish_depth_image: true
+    
+    # Publish confidence image
+    publish_confidence_image: true
+    
+    # Publish amplitude/intensity image
+    publish_amplitude_image: true
+    
+    # Publish point cloud
+    publish_pointcloud:  true
+    
+    # Point cloud decimation factor (1 = full resolution, 2 = half, etc.)
+    pointcloud_decimation: 1
+    
+    # =========================================================================
+    # Depth Processing
+    # =========================================================================
+    
+    # Minimum valid depth in meters
+    min_depth_m: 0.1
+    
+    # Maximum valid depth in meters
+    max_depth_m: 4.0
+    
+    # Enable temporal filtering (smooths depth over time)
+    enable_temporal_filter: true
+    
+    # Temporal filter alpha (0-1, higher = more weight to new frames)
+    temporal_filter_alpha: 0.4
+    
+    # Enable spatial filtering (smooths depth spatially)
+    enable_spatial_filter: true
+    
+    # Spatial filter kernel size (must be odd)
+    spatial_filter_size: 3
+    
+    # Enable edge-preserving filtering
+    enable_edge_preserving_filter: false
+    
+    # Hole filling mode
+    # Options: "none", "nearest", "linear"
+    hole_filling_mode:  "none"
+    
+    # =========================================================================
+    # Camera Intrinsics
+    # =========================================================================
+    
+    # Camera intrinsic parameters for the ToF sensor
+    # These are approximate values for 240x180 resolution
+    # Should be calibrated for accurate measurements
+    
+    # Focal length in pixels
+    fx: 120.0
+    fy: 120.0
+    
+    # Principal point
+    cx: 120.0
+    cy: 90.0
+    
+    # Distortion coefficients [k1, k2, p1, p2, k3]
+    distortion_coefficients: [0.0, 0.0, 0.0, 0.0, 0.0]
+    
+    # =========================================================================
+    # Point Cloud Settings
+    # =========================================================================
+    
+    # Point cloud frame (typically same as frame_id)
+    pointcloud_frame_id: "tof_optical_frame"
+    
+    # Include intensity in point cloud
+    include_intensity:  true
+    
+    # Organized point cloud (maintains image structure)
+    organized_pointcloud: false
+    
+    # =========================================================================
+    # Performance
+    # =========================================================================
+    
+    # Use hardware acceleration if available
+    use_hardware_acceleration: true
+    
+    # Queue size for publishers
+    queue_size: 5
+    
+    # =========================================================================
+    # Diagnostics
+    # =========================================================================
+    
+    # Publish diagnostic messages
+    publish_diagnostics:  true
+    
+    # Diagnostic publish rate (Hz)
+    diagnostics_rate_hz: 1.0
+    
+    # Frame rate warning threshold (fraction of target)
+    frame_rate_warning_threshold: 0.8

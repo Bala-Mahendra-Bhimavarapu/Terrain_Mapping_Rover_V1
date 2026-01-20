@@ -1,0 +1,51 @@
+# =============================================================================
+# Arducam ToF Camera Calibration Data
+# =============================================================================
+#
+# Intrinsic calibration for the ToF camera. 
+# These values should be determined through proper calibration procedure.
+#
+# =============================================================================
+
+image_width: 240
+image_height: 180
+camera_name: tof_camera
+
+# Intrinsic camera matrix
+camera_matrix:
+  rows: 3
+  cols: 3
+  data: [120.0, 0.0, 120.0,
+         0.0, 120.0, 90.0,
+         0.0, 0.0, 1.0]
+
+# Distortion model
+distortion_model: plumb_bob
+
+# Distortion coefficients
+distortion_coefficients:
+  rows: 1
+  cols: 5
+  data: [0.0, 0.0, 0.0, 0.0, 0.0]
+
+# Rectification matrix (identity for single camera)
+rectification_matrix: 
+  rows: 3
+  cols: 3
+  data:  [1.0, 0.0, 0.0,
+         0.0, 1.0, 0.0,
+         0.0, 0.0, 1.0]
+
+# Projection matrix
+projection_matrix:
+  rows: 3
+  cols: 4
+  data: [120.0, 0.0, 120.0, 0.0,
+         0.0, 120.0, 90.0, 0.0,
+         0.0, 0.0, 1.0, 0.0]
+
+# Depth scale factor (converts raw depth to meters)
+depth_scale:  0.001
+
+# Depth offset correction (meters)
+depth_offset: 0.0
