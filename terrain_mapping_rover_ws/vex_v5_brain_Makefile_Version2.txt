@@ -1,0 +1,16 @@
+################################################################################
+# TMR VEX V5 Brain Makefile
+################################################################################
+
+# Set this to the location of the PROS toolchain
+PROS_HOME ? = /usr/local/pros-toolchain
+
+# Name of the project
+PROJECT_NAME = tmr_vex
+
+# Source files
+SRC_C   = $(wildcard src/*.c)
+SRC_CPP = $(wildcard src/*.cpp)
+
+# Include PROS build system
+include $(PROS_HOME)/common. mk

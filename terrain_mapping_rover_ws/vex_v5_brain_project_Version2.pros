@@ -1,0 +1,8 @@
+[library]
+modules=
+template=kernel
+version=3.8.0
+target=v5
+use_wifi=0
+
+[autopaths]
