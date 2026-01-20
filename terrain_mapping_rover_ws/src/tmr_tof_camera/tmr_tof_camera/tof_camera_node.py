@@ -59,7 +59,7 @@ class ToFCameraNode(Node):
         self._get_parameters()
         
         # Initialize components
-        self. camera:  Optional[ArducamToFDriver] = None
+        self.camera:  Optional[ArducamToFDriver] = None
         self.pointcloud_gen: Optional[PointCloudGenerator] = None
         self.depth_processor: Optional[DepthProcessor] = None
         self.cv_bridge = CvBridge()
