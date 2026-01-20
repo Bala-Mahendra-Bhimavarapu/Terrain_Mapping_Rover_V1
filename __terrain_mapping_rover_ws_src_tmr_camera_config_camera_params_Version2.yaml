@@ -1,0 +1,170 @@
+# =============================================================================
+# IMX500 Camera Driver Configuration
+# =============================================================================
+#
+# Configuration for the Raspberry Pi AI Camera (IMX500) connected via CSI
+#
+# The IMX500 is a 12. 3MP camera with on-chip AI processing capability. 
+# This driver supports both standard image capture and AI inference modes.
+#
+# =============================================================================
+
+camera_node:
+  ros__parameters:
+    # =========================================================================
+    # Camera Identification
+    # =========================================================================
+    
+    # Camera index (0 for first camera, 1 for second if using multiple)
+    camera_index: 0
+    
+    # Frame ID for camera messages
+    frame_id: "camera_optical_frame"
+    
+    # Camera name (used for camera_info)
+    camera_name: "imx500"
+    
+    # =========================================================================
+    # Resolution and Frame Rate
+    # =========================================================================
+    
+    # Image width in pixels
+    # IMX500 supports:  4056x3040 (full), 1920x1080, 1280x720, 640x480
+    width: 1280
+    
+    # Image height in pixels
+    height: 720
+    
+    # Target frame rate (fps)
+    # Higher resolutions may limit max frame rate
+    frame_rate: 30.0
+    
+    # =========================================================================
+    # Image Format
+    # =========================================================================
+    
+    # Output encoding format
+    # Options: "bgr8", "rgb8", "mono8", "yuv422"
+    encoding: "bgr8"
+    
+    # Enable image compression for transport
+    enable_compressed:  true
+    
+    # JPEG compression quality (0-100)
+    jpeg_quality: 80
+    
+    # =========================================================================
+    # Exposure and Gain
+    # =========================================================================
+    
+    # Auto exposure mode
+    # Options: "auto", "manual"
+    exposure_mode: "auto"
+    
+    # Manual exposure time in microseconds (if exposure_mode is "manual")
+    # Range: 1 - 1000000 (1us to 1s)
+    exposure_time_us: 20000
+    
+    # Auto exposure compensation (-2.0 to 2.0 EV)
+    exposure_compensation:  0.0
+    
+    # Analog gain mode
+    # Options: "auto", "manual"
+    gain_mode: "auto"
+    
+    # Manual analog gain (if gain_mode is "manual")
+    # Range: 1. 0 - 16.0
+    analog_gain: 1.0
+    
+    # =========================================================================
+    # White Balance
+    # =========================================================================
+    
+    # Auto white balance mode
+    # Options: "auto", "manual", "daylight", "cloudy", "tungsten", "fluorescent"
+    awb_mode: "auto"
+    
+    # Manual white balance gains (if awb_mode is "manual")
+    awb_gain_red: 1.5
+    awb_gain_blue: 1.5
+    
+    # =========================================================================
+    # Image Quality
+    # =========================================================================
+    
+    # Sharpness (-1.0 to 1.0, 0.0 is default)
+    sharpness: 0.0
+    
+    # Contrast (0.0 to 2.0, 1.0 is default)
+    contrast: 1.0
+    
+    # Brightness (-1.0 to 1.0, 0.0 is default)
+    brightness: 0.0
+    
+    # Saturation (0.0 to 2.0, 1.0 is default)
+    saturation: 1.0
+    
+    # Denoise mode
+    # Options: "off", "fast", "high_quality"
+    denoise_mode: "fast"
+    
+    # =========================================================================
+    # Camera Intrinsics (Calibration)
+    # =========================================================================
+    
+    # Camera intrinsic matrix [fx, 0, cx, 0, fy, cy, 0, 0, 1]
+    # These should be determined through camera calibration
+    # Default values are approximate for 1280x720
+    camera_matrix: [900.0, 0.0, 640.0,
+                    0.0, 900.0, 360.0,
+                    0.0, 0.0, 1.0]
+    
+    # Distortion coefficients [k1, k2, p1, p2, k3]
+    # Radial (k1, k2, k3) and tangential (p1, p2) distortion
+    distortion_coefficients: [0.0, 0.0, 0.0, 0.0, 0.0]
+    
+    # Distortion model
+    distortion_model: "plumb_bob"
+    
+    # Path to calibration file (overrides above values if exists)
+    calibration_file: ""
+    
+    # =========================================================================
+    # IMX500 AI Features (Optional)
+    # =========================================================================
+    
+    # Enable on-chip AI inference
+    # Requires . rpk model file loaded on the IMX500
+    enable_ai_inference: false
+    
+    # Path to AI model file (.rpk format)
+    ai_model_path: ""
+    
+    # Publish AI inference results
+    publish_ai_results: false
+    
+    # =========================================================================
+    # Performance
+    # =========================================================================
+    
+    # Use hardware acceleration (GPU/ISP)
+    use_hardware_acceleration: true
+    
+    # Buffer count for capture
+    buffer_count: 4
+    
+    # Drop frames if processing is slow
+    drop_frames:  true
+    
+    # =========================================================================
+    # Diagnostics
+    # =========================================================================
+    
+    # Publish diagnostic messages
+    publish_diagnostics:  true
+    
+    # Diagnostic publish rate (Hz)
+    diagnostics_rate_hz: 1.0
+    
+    # Frame rate warning threshold (fraction of target)
+    frame_rate_warning_threshold: 0.9
