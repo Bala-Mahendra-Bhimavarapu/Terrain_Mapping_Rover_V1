@@ -1,0 +1,93 @@
+# =============================================================================
+# Phase 1 Testing Configuration  
+# =============================================================================
+#
+# This file contains TEST PARAMETERS and OVERRIDES for Phase 1 testing. 
+# Robot physical parameters are defined in: 
+#   - VEX:  vex_v5_brain/include/config. hpp
+#   - URDF: tmr_description/urdf/rover.urdf.xacro
+#   - Nodes: Each node has its own defaults
+#
+# =============================================================================
+
+# =============================================================================
+# VEX Serial Node Overrides (for testing)
+# =============================================================================
+vex_serial_node:
+  ros__parameters:
+    # Serial port (may need adjustment based on your setup)
+    serial_port: "/dev/ttyACM0"
+    baud_rate: 115200
+    
+    # Use values from config.hpp (don't override unless calibrating)
+    # wheel_radius_m: 0.0508      # Defined in config.hpp
+    # track_width_m: 0.295        # Defined in config.hpp  
+    # ticks_per_revolution: 1800  # Defined in config.hpp
+    
+    # Conservative velocity limits for Phase 1 testing
+    max_linear_velocity_ms: 0.2    # Normal:  0.3
+    max_angular_velocity_rads: 0.2  # Normal: 0.25
+
+# =============================================================================
+# IMU Node Overrides
+# =============================================================================
+imu_node:
+  ros__parameters: 
+    i2c_bus: 1
+    i2c_address: 0x68
+    publish_rate_hz: 100.0
+    
+    # Auto-calibrate on startup for testing
+    auto_calibrate: true
+    calibration_samples: 500
+
+# =============================================================================
+# Camera Node Overrides (lower resolution for testing)
+# =============================================================================
+camera_node:
+  ros__parameters:
+    width: 640
+    height: 480
+    frame_rate: 15.0
+    enable_compressed: true
+
+# =============================================================================
+# ToF Camera Overrides
+# =============================================================================
+tof_camera_node: 
+  ros__parameters:
+    depth_mode: "near"
+    frame_rate: 15.0
+    confidence_threshold: 30
+
+# =============================================================================
+# Teleop Overrides (conservative for testing)
+# =============================================================================
+teleop_keyboard:
+  ros__parameters:
+    max_linear_velocity: 0.2
+    max_angular_velocity: 0.2
+
+teleop_gamepad:
+  ros__parameters:
+    max_linear_velocity: 0.2
+    max_angular_velocity:  0.2
+
+# =============================================================================
+# Test Configuration
+# =============================================================================
+phase1_test:
+  ros__parameters:
+    # Test durations
+    motor_test_duration: 5.0
+    sensor_test_duration: 10.0
+    
+    # Test velocities (very conservative)
+    test_linear_velocity: 0.1
+    test_angular_velocity: 0.15
+    
+    # Pass criteria
+    min_encoder_rate_hz: 40.0
+    min_imu_rate_hz:  80.0
+    min_camera_rate_hz: 10.0
+    min_tof_rate_hz: 10.0
