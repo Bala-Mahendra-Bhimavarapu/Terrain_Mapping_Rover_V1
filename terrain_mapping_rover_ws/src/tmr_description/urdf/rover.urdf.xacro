@@ -2,60 +2,78 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="terrain_mapping_rover">
   
   <!-- ===================================================================== -->
-  <!-- ROBOT PARAMETERS - Edit these based on your measurements/calibration  -->
+  <!-- XACRO ARGUMENTS - Can be overridden via launch file                   -->
   <!-- ===================================================================== -->
   
-  <!-- All measurements in meters, angles in radians -->
+  <!-- Camera position arguments -->
+  <xacro:arg name="camera_x" default="0.13"/>
+  <xacro:arg name="camera_y" default="-0.0275"/>
+  <xacro:arg name="camera_z" default="0.078"/>
+  <xacro:arg name="camera_roll" default="0.0"/>
+  <xacro:arg name="camera_pitch" default="-0.2751"/>
+  <xacro:arg name="camera_yaw" default="0.0"/>
+  
+  <!-- ToF position arguments -->
+  <xacro:arg name="tof_x" default="0.13"/>
+  <xacro:arg name="tof_y" default="0.014"/>
+  <xacro:arg name="tof_z" default="0.078"/>
+  <xacro:arg name="tof_roll" default="0.0"/>
+  <xacro: arg name="tof_pitch" default="-0.2751"/>
+  <xacro:arg name="tof_yaw" default="0.0"/>
+  
+  <!-- IMU position arguments -->
+  <xacro:arg name="imu_x" default="0.0"/>
+  <xacro: arg name="imu_y" default="0.0"/>
+  <xacro:arg name="imu_z" default="0.046"/>
+  <xacro:arg name="imu_roll" default="0.0"/>
+  <xacro:arg name="imu_pitch" default="0.0"/>
+  <xacro:arg name="imu_yaw" default="0.0"/>
+  
+  <!-- ===================================================================== -->
+  <!-- ROBOT PARAMETERS                                                       -->
+  <!-- ===================================================================== -->
+  
   <!-- PI constant -->
-  <xacro:property name="pi" value="3.14159265359"/>
+  <xacro: property name="pi" value="3.14159265359"/>
   
-  <!-- ===== ROVER BODY DIMENSIONS ===== -->
-  <xacro:property name="rover_length" value="0.26"/>      <!-- 26 cm (X direction) -->
-  <xacro:property name="rover_width" value="0.26"/>       <!-- 26 cm (Y direction) -->
-  <xacro:property name="rover_height" value="0.045"/>     <!-- 4.5 cm (Z direction) -->
+  <!-- Rover body dimensions -->
+  <xacro: property name="rover_length" value="0.26"/>
+  <xacro: property name="rover_width" value="0.26"/>
+  <xacro:property name="rover_height" value="0.045"/>
   
-  <!-- ===== WHEEL PARAMETERS ===== -->
-  <xacro:property name="wheel_radius" value="0.0508"/>    <!-- 2 inches = 0.0508 m -->
-  <xacro:property name="wheel_width" value="0.0275"/>       <!-- 2.75 cm wheel width -->
-  <xacro: property name="track_width" value="0.295"/>      <!-- 29.5 cm distance between wheel centers -->
-  <xacro:property name="wheelbase" value="0.167"/>         <!-- 16.7 cm distance between front/back axles -->
+  <!-- Wheel parameters -->
+  <xacro: property name="wheel_radius" value="0.0508"/>
+  <xacro: property name="wheel_width" value="0.0275"/>
+  <xacro: property name="track_width" value="0.295"/>
+  <xacro: property name="wheelbase" value="0.167"/>
   
-  <!-- ===== BASE_LINK HEIGHT ===== -->
-  <!-- base_link is at center of rotation, 2 inches above ground -->
-  <xacro:property name="base_link_height" value="0.0508"/> <!-- 2 inches = 0.0508 m -->
+  <!-- Base link height (2 inches above ground) -->
+  <xacro:property name="base_link_height" value="0.0508"/>
   
-  <!-- ===== CAMERA MOUNT (IMX500) ===== -->
-  <!-- Position relative to base_link -->
-  <!-- 13. 5cm forward, 2.75cm right, 8.1cm up, -15.76° pitch -->
-  <xacro: property name="camera_x" value="0.13"/>        <!-- 13 cm Forward -->
-  <xacro:property name="camera_y" value="-0.0275"/>       <!-- 2.75 cm Right (negative Y in ROS) -->
-  <xacro:property name="camera_z" value="0.078"/>         <!-- 7.8 cm Up from base_link -->
-  <xacro:property name="camera_roll" value="0.0"/>        <!-- No roll -->
-  <xacro:property name="camera_pitch" value="-0.2751"/>   <!-- -15.76° = -0.2751 rad Tilted down slightly-->
-  <xacro:property name="camera_yaw" value="0.0"/>         <!-- No yaw, facing forward -->
+  <!-- Sensor positions from arguments -->
+  <xacro: property name="camera_x" value="$(arg camera_x)"/>
+  <xacro:property name="camera_y" value="$(arg camera_y)"/>
+  <xacro:property name="camera_z" value="$(arg camera_z)"/>
+  <xacro:property name="camera_roll" value="$(arg camera_roll)"/>
+  <xacro:property name="camera_pitch" value="$(arg camera_pitch)"/>
+  <xacro:property name="camera_yaw" value="$(arg camera_yaw)"/>
   
-  <!-- ===== TOF CAMERA MOUNT (Arducam B0410) ===== -->
-  <!-- Position relative to base_link -->
-  <!-- 13.5cm forward, 1.4cm left, 8.1cm up, -15.76° pitch -->
-  <xacro:property name="tof_x" value="0.13"/>             <!-- 13 cm Forward -->
-  <xacro:property name="tof_y" value="0.014"/>            <!-- 1.4 cm Left (positive Y in ROS) -->
-  <xacro:property name="tof_z" value="0.078"/>            <!-- 7.8 cm Up from base_link -->
-  <xacro:property name="tof_roll" value="0.0"/>           <!-- No roll -->
-  <xacro:property name="tof_pitch" value="-0.2751"/>      <!-- -15.76° = -0.2751 rad Tilted down slightly-->
-  <xacro:property name="tof_yaw" value="0.0"/>            <!-- No yaw, facing forward -->
+  <xacro:property name="tof_x" value="$(arg tof_x)"/>
+  <xacro:property name="tof_y" value="$(arg tof_y)"/>
+  <xacro:property name="tof_z" value="$(arg tof_z)"/>
+  <xacro:property name="tof_roll" value="$(arg tof_roll)"/>
+  <xacro: property name="tof_pitch" value="$(arg tof_pitch)"/>
+  <xacro:property name="tof_yaw" value="$(arg tof_yaw)"/>
   
-  <!-- ===== IMU MOUNT (MPU6050) ===== -->
-  <!-- Position relative to base_link -->
-  <!-- Centered, 4. 5cm up -->
-  <xacro:property name="imu_x" value="0.0"/>              <!-- Centered -->
-  <xacro:property name="imu_y" value="0.0"/>              <!-- Centered -->
-  <xacro:property name="imu_z" value="0.046"/>            <!-- 4.6cm up -->
-  <xacro:property name="imu_roll" value="0.0"/>           <!-- No roll -->
-  <xacro:property name="imu_pitch" value="0.0"/>          <!-- No pitch -->
-  <xacro:property name="imu_yaw" value="0.0"/>            <!-- No yaw (X forward, Y left, Z up) -->
+  <xacro:property name="imu_x" value="$(arg imu_x)"/>
+  <xacro:property name="imu_y" value="$(arg imu_y)"/>
+  <xacro: property name="imu_z" value="$(arg imu_z)"/>
+  <xacro:property name="imu_roll" value="$(arg imu_roll)"/>
+  <xacro:property name="imu_pitch" value="$(arg imu_pitch)"/>
+  <xacro:property name="imu_yaw" value="$(arg imu_yaw)"/>
   
   <!-- ===================================================================== -->
-  <!-- VISUAL/COLLISION MATERIALS                                            -->
+  <!-- MATERIALS                                                              -->
   <!-- ===================================================================== -->
   
   <material name="dark_gray">
@@ -86,7 +104,7 @@
   <!-- LINKS                                                                  -->
   <!-- ===================================================================== -->
   
-  <!-- Base footprint - on the ground plane, used for 2D navigation -->
+  <!-- Base footprint - on the ground plane -->
   <link name="base_footprint">
     <visual>
       <geometry>
@@ -96,7 +114,7 @@
     </visual>
   </link>
   
-  <!-- Base link - center of robot, center of rotation -->
+  <!-- Base link - center of robot -->
   <link name="base_link">
     <visual>
       <geometry>
@@ -112,13 +130,13 @@
       <origin xyz="0 0 ${rover_height/2}" rpy="0 0 0"/>
     </collision>
     <inertial>
-      <mass value="5. 0"/>
+      <mass value="5.0"/>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <inertia ixx="0.05" ixy="0" ixz="0" iyy="0.05" iyz="0" izz="0.05"/>
     </inertial>
   </link>
   
-  <!-- Wheel links (for visualization) -->
+  <!-- Wheel macro -->
   <xacro:macro name="wheel_link" params="name">
     <link name="${name}">
       <visual>
@@ -157,7 +175,7 @@
     </collision>
   </link>
   
-  <!-- Camera optical frame (Z forward, X right, Y down) -->
+  <!-- Camera optical frame -->
   <link name="camera_optical_frame"/>
   
   <!-- ToF camera link -->
@@ -192,14 +210,14 @@
   <!-- JOINTS                                                                 -->
   <!-- ===================================================================== -->
   
-  <!-- base_footprint to base_link (vertical offset) -->
+  <!-- base_footprint to base_link -->
   <joint name="base_footprint_to_base_link" type="fixed">
     <parent link="base_footprint"/>
     <child link="base_link"/>
     <origin xyz="0 0 ${base_link_height}" rpy="0 0 0"/>
   </joint>
   
-  <!-- Wheel joints (fixed for visualization - actual motion is via odom) -->
+  <!-- Wheel joints -->
   <joint name="front_left_wheel_joint" type="fixed">
     <parent link="base_link"/>
     <child link="front_left_wheel"/>
@@ -224,7 +242,7 @@
     <origin xyz="${-wheelbase/2} ${-track_width/2} ${-base_link_height + wheel_radius}" rpy="0 0 0"/>
   </joint>
   
-  <!-- base_link to camera_link -->
+  <!-- Camera joint -->
   <joint name="base_link_to_camera" type="fixed">
     <parent link="base_link"/>
     <child link="camera_link"/>
@@ -232,16 +250,14 @@
             rpy="${camera_roll} ${camera_pitch} ${camera_yaw}"/>
   </joint>
   
-  <!-- camera_link to camera_optical_frame -->
-  <!-- Optical frame convention: Z forward, X right, Y down -->
-  <!-- This is a -90° rotation about Z, then -90° rotation about X -->
+  <!-- Camera optical frame joint -->
   <joint name="camera_to_optical" type="fixed">
     <parent link="camera_link"/>
     <child link="camera_optical_frame"/>
     <origin xyz="0 0 0" rpy="${-pi/2} 0 ${-pi/2}"/>
   </joint>
   
-  <!-- base_link to tof_link -->
+  <!-- ToF joint -->
   <joint name="base_link_to_tof" type="fixed">
     <parent link="base_link"/>
     <child link="tof_link"/>
@@ -249,14 +265,14 @@
             rpy="${tof_roll} ${tof_pitch} ${tof_yaw}"/>
   </joint>
   
-  <!-- tof_link to tof_optical_frame -->
+  <!-- ToF optical frame joint -->
   <joint name="tof_to_optical" type="fixed">
     <parent link="tof_link"/>
     <child link="tof_optical_frame"/>
     <origin xyz="0 0 0" rpy="${-pi/2} 0 ${-pi/2}"/>
   </joint>
   
-  <!-- base_link to imu_link -->
+  <!-- IMU joint -->
   <joint name="base_link_to_imu" type="fixed">
     <parent link="base_link"/>
     <child link="imu_link"/>
