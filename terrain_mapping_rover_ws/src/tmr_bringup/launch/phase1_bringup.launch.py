@@ -27,8 +27,8 @@ from launch.actions import (
 )
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, PythonExpression
-from launch. conditions import IfCondition, UnlessCondition
-from launch_ros.actions import Node, PushRosNamespace
+from launch.conditions import IfCondition, UnlessCondition
+from launch_ros.actions import Node
 
 
 def generate_launch_description():
@@ -71,75 +71,80 @@ def generate_launch_description():
     )
     
     # =========================================================================
-    # VEX Serial Node
+    # Hardware Nodes (conditional on use_sim)
     # =========================================================================
-    vex_serial_node = Node(
-        package='tmr_vex_serial',
-        executable='vex_serial_node',
-        name='vex_serial_node',
-        output='screen',
-        parameters=[LaunchConfiguration('config_file')],
+    hardware_nodes = GroupAction(
         condition=UnlessCondition(LaunchConfiguration('use_sim')),
-        remappings=[
-            ('cmd_vel', '/cmd_vel'),
-            ('odom', '/odom'),
-            ('wheel_encoders', '/wheel_encoders'),
+        actions=[
+            # VEX Serial Node
+            Node(
+                package='tmr_vex_serial',
+                executable='vex_serial_node',
+                name='vex_serial_node',
+                output='screen',
+                parameters=[LaunchConfiguration('config_file')],
+                remappings=[
+                    ('cmd_vel', '/cmd_vel'),
+                    ('odom', '/odom'),
+                ]
+            ),
+            
+            # IMU Node
+            Node(
+                package='tmr_imu_driver',
+                executable='imu_node',
+                name='imu_node',
+                output='screen',
+                parameters=[LaunchConfiguration('config_file')],
+                remappings=[
+                    ('imu/data', '/imu/data'),
+                    ('imu/data_raw', '/imu/data_raw'),
+                ]
+            ),
         ]
     )
     
-    # =========================================================================
-    # IMU Node
-    # =========================================================================
-    imu_node = Node(
-        package='tmr_imu_driver',
-        executable='imu_node',
-        name='imu_node',
-        output='screen',
-        parameters=[LaunchConfiguration('config_file')],
-        condition=UnlessCondition(LaunchConfiguration('use_sim')),
-        remappings=[
-            ('imu/data', '/imu/data'),
-            ('imu/data_raw', '/imu/data_raw'),
-        ]
-    )
-    
-    # =========================================================================
-    # Camera Node (delayed start to allow other nodes to initialize)
-    # =========================================================================
+    # Camera Node (delayed start)
     camera_node = TimerAction(
         period=2.0,
         actions=[
-            Node(
-                package='tmr_camera',
-                executable='camera_node',
-                name='camera_node',
-                output='screen',
-                parameters=[LaunchConfiguration('config_file')],
+            GroupAction(
                 condition=UnlessCondition(LaunchConfiguration('use_sim')),
-                remappings=[
-                    ('camera/image_raw', '/camera/image_raw'),
-                    ('camera/camera_info', '/camera/camera_info'),
+                actions=[
+                    Node(
+                        package='tmr_camera',
+                        executable='camera_node',
+                        name='camera_node',
+                        output='screen',
+                        parameters=[LaunchConfiguration('config_file')],
+                        remappings=[
+                            ('camera/image_raw', '/camera/image_raw'),
+                            ('camera/camera_info', '/camera/camera_info'),
+                        ]
+                    )
                 ]
             )
         ]
     )
     
-    # =========================================================================
     # ToF Camera Node (delayed start)
-    # =========================================================================
     tof_camera_node = TimerAction(
         period=3.0,
         actions=[
-            Node(
-                package='tmr_tof_camera',
-                executable='tof_camera_node',
-                name='tof_camera_node',
-                output='screen',
-                parameters=[LaunchConfiguration('config_file')],
+            GroupAction(
                 condition=UnlessCondition(LaunchConfiguration('use_sim')),
-                remappings=[
-                    ('tof/depth/image_raw', '/tof/depth/image_raw'),
-                    ('tof/points', '/tof/points'),
+                actions=[
+                    Node(
+                        package='tmr_tof_camera',
+                        executable='tof_camera_node',
+                        name='tof_camera_node',
+                        output='screen',
+                        parameters=[LaunchConfiguration('config_file')],
+                        remappings=[
+                            ('tof/depth/image_raw', '/tof/depth/image_raw'),
+                            ('tof/points', '/tof/points'),
+                        ]
+                    )
                 ]
             )
         ]
@@ -213,8 +218,7 @@ def generate_launch_description():
         
         # Core nodes
         robot_description_launch,
-        vex_serial_node,
-        imu_node,
+        hardware_nodes,
         camera_node,
         tof_camera_node,
         
