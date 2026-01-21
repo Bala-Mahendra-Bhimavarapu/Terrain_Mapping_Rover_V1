@@ -1,0 +1,107 @@
+# =============================================================================
+# Gamepad Button and Axis Mappings
+# =============================================================================
+#
+# Common gamepad mappings for different controllers.
+# Select the appropriate mapping for your controller.
+#
+# =============================================================================
+
+# Xbox Controller (including Xbox One, Xbox Series)
+xbox: 
+  axes:
+    left_stick_x: 0      # Left stick horizontal
+    left_stick_y:  1      # Left stick vertical
+    right_stick_x: 3     # Right stick horizontal
+    right_stick_y: 4     # Right stick vertical
+    left_trigger: 2      # LT (0 to 1)
+    right_trigger: 5     # RT (0 to 1)
+    dpad_x: 6            # D-pad horizontal
+    dpad_y: 7            # D-pad vertical
+  
+  buttons:
+    a: 0                 # A button
+    b: 1                 # B button
+    x:  2                 # X button
+    y: 3                 # Y button
+    lb: 4                # Left bumper
+    rb: 5                # Right bumper
+    back: 6              # Back/View button
+    start: 7             # Start/Menu button
+    guide: 8             # Xbox button
+    left_stick:  9        # Left stick click
+    right_stick: 10      # Right stick click
+
+
+# PlayStation Controller (DualShock 4, DualSense)
+playstation:
+  axes:
+    left_stick_x: 0      # Left stick horizontal
+    left_stick_y: 1      # Left stick vertical
+    right_stick_x: 3     # Right stick horizontal
+    right_stick_y: 4     # Right stick vertical
+    l2: 2                # L2 trigger
+    r2: 5                # R2 trigger
+    dpad_x: 6            # D-pad horizontal
+    dpad_y: 7            # D-pad vertical
+  
+  buttons:
+    cross: 0             # Cross (X) button
+    circle: 1            # Circle button
+    square: 2            # Square button
+    triangle: 3          # Triangle button
+    l1: 4                # L1 button
+    r1: 5                # R1 button
+    share: 6             # Share button
+    options: 7           # Options button
+    ps: 8                # PS button
+    l3: 9                # Left stick click
+    r3: 10               # Right stick click
+
+
+# Logitech F310/F710
+logitech:
+  axes: 
+    left_stick_x:  0
+    left_stick_y: 1
+    right_stick_x: 3
+    right_stick_y: 4
+    left_trigger: 2
+    right_trigger: 5
+    dpad_x: 6
+    dpad_y: 7
+  
+  buttons:
+    a: 0
+    b: 1
+    x: 2
+    y: 3
+    lb: 4
+    rb: 5
+    back: 6
+    start: 7
+    left_stick: 9
+    right_stick: 10
+
+
+# 8BitDo Controllers
+8bitdo:
+  axes:
+    left_stick_x: 0
+    left_stick_y: 1
+    right_stick_x: 2
+    right_stick_y:  3
+    dpad_x: 4
+    dpad_y: 5
+  
+  buttons:
+    a: 0
+    b: 1
+    x: 3
+    y: 4
+    l1: 6
+    r1: 7
+    l2: 8
+    r2: 9
+    select: 10
+    start: 11

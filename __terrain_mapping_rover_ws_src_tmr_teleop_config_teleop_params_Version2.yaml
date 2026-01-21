@@ -1,0 +1,206 @@
+# =============================================================================
+# Teleoperation Configuration
+# =============================================================================
+#
+# Configuration for keyboard and gamepad teleoperation of the rover.
+#
+# =============================================================================
+
+# =============================================================================
+# Keyboard Teleop Configuration
+# =============================================================================
+teleop_keyboard:
+  ros__parameters:
+    # -------------------------------------------------------------------------
+    # Velocity Limits
+    # -------------------------------------------------------------------------
+    
+    # Maximum linear velocity (m/s)
+    max_linear_velocity: 0.3
+    
+    # Maximum angular velocity (rad/s)
+    max_angular_velocity: 0.5
+    
+    # Velocity increment per key press (m/s for linear, rad/s for angular)
+    linear_velocity_step: 0.05
+    angular_velocity_step: 0.1
+    
+    # -------------------------------------------------------------------------
+    # Output Configuration
+    # -------------------------------------------------------------------------
+    
+    # Topic to publish velocity commands
+    cmd_vel_topic: "/cmd_vel"
+    
+    # Publish rate when key is held (Hz)
+    publish_rate: 10.0
+    
+    # -------------------------------------------------------------------------
+    # Safety
+    # -------------------------------------------------------------------------
+    
+    # Enable emergency stop on 'Space' key
+    enable_estop: true
+    
+    # Timeout to stop if no key pressed (seconds, 0 = disabled)
+    idle_timeout: 0.5
+    
+    # -------------------------------------------------------------------------
+    # Key Bindings (for reference - hardcoded in node)
+    # -------------------------------------------------------------------------
+    # Movement: 
+    #   w/W - Forward
+    #   s/S - Backward
+    #   a/A - Turn Left
+    #   d/D - Turn Right
+    #   q/Q - Forward + Left
+    #   e/E - Forward + Right
+    #   z/Z - Backward + Left
+    #   c/C - Backward + Right
+    #
+    # Speed Control:
+    #   i/I - Increase linear speed
+    #   k/K - Decrease linear speed
+    #   o/O - Increase angular speed
+    #   l/L - Decrease angular speed
+    #
+    # Stop:
+    #   Space - Emergency Stop
+    #   x/X - Gradual Stop
+
+
+# =============================================================================
+# Gamepad Teleop Configuration
+# =============================================================================
+teleop_gamepad:
+  ros__parameters: 
+    # -------------------------------------------------------------------------
+    # Velocity Limits
+    # -------------------------------------------------------------------------
+    
+    # Maximum linear velocity (m/s)
+    max_linear_velocity: 0.3
+    
+    # Maximum angular velocity (rad/s)
+    max_angular_velocity:  0.5
+    
+    # Turbo mode multiplier (when turbo button held)
+    turbo_multiplier: 1.5
+    
+    # -------------------------------------------------------------------------
+    # Axis Configuration
+    # -------------------------------------------------------------------------
+    
+    # Axis index for linear velocity (typically left stick Y)
+    linear_axis: 1
+    
+    # Axis index for angular velocity (typically left stick X or right stick X)
+    angular_axis: 0
+    
+    # Invert axes if needed
+    invert_linear:  false
+    invert_angular:  true
+    
+    # Deadzone for analog sticks (0-1)
+    deadzone: 0.1
+    
+    # -------------------------------------------------------------------------
+    # Button Configuration
+    # -------------------------------------------------------------------------
+    
+    # Enable button (must be held for movement) - typically RB/R1
+    enable_button: 5
+    
+    # Turbo button (increases speed) - typically LB/L1
+    turbo_button: 4
+    
+    # Emergency stop button - typically B/Circle
+    estop_button: 1
+    
+    # -------------------------------------------------------------------------
+    # Output Configuration
+    # -------------------------------------------------------------------------
+    
+    # Topic to publish velocity commands
+    cmd_vel_topic: "/cmd_vel"
+    
+    # Joy topic to subscribe
+    joy_topic: "/joy"
+    
+    # Publish rate (Hz)
+    publish_rate: 20.0
+
+
+# =============================================================================
+# Velocity Smoother Configuration
+# =============================================================================
+velocity_smoother: 
+  ros__parameters:
+    # -------------------------------------------------------------------------
+    # Smoothing Parameters
+    # -------------------------------------------------------------------------
+    
+    # Maximum linear acceleration (m/s²)
+    max_linear_acceleration: 0.5
+    
+    # Maximum linear deceleration (m/s²)
+    max_linear_deceleration: 1.0
+    
+    # Maximum angular acceleration (rad/s²)
+    max_angular_acceleration:  1.0
+    
+    # Maximum angular deceleration (rad/s²)
+    max_angular_deceleration: 2.0
+    
+    # -------------------------------------------------------------------------
+    # Topics
+    # -------------------------------------------------------------------------
+    
+    # Input velocity topic
+    input_topic: "/cmd_vel_raw"
+    
+    # Output smoothed velocity topic
+    output_topic: "/cmd_vel"
+    
+    # -------------------------------------------------------------------------
+    # Timing
+    # -------------------------------------------------------------------------
+    
+    # Control loop rate (Hz)
+    rate: 50.0
+    
+    # Timeout for input commands (seconds)
+    timeout: 0.5
+
+
+# =============================================================================
+# Teleop Mux Configuration
+# =============================================================================
+teleop_mux: 
+  ros__parameters:
+    # -------------------------------------------------------------------------
+    # Input Topics (in priority order, highest first)
+    # -------------------------------------------------------------------------
+    
+    input_topics:
+      - "/cmd_vel_safety"      # Safety controller (highest priority)
+      - "/cmd_vel_gamepad"     # Gamepad input
+      - "/cmd_vel_keyboard"    # Keyboard input
+      - "/cmd_vel_nav"         # Navigation stack (lowest priority)
+    
+    # -------------------------------------------------------------------------
+    # Output
+    # -------------------------------------------------------------------------
+    
+    output_topic: "/cmd_vel"
+    
+    # -------------------------------------------------------------------------
+    # Timing
+    # -------------------------------------------------------------------------
+    
+    # Timeout for each input (seconds)
+    # If no message received within timeout, input is considered inactive
+    input_timeout: 0.5
+    
+    # Rate for checking inputs (Hz)
+    rate: 50.0
