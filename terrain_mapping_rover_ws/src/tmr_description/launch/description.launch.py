@@ -9,7 +9,7 @@ Usage:
     
     # With calibration overrides: 
     ros2 launch tmr_description description.launch.py \
-        camera_x:=0.14 camera_pitch:=-0.28
+        camera_x: =0.14 camera_pitch:=-0.28
 """
 
 import os
@@ -26,24 +26,24 @@ def generate_launch_description():
     pkg_dir = get_package_share_directory('tmr_description')
     
     # URDF file path
-    urdf_file = os.path.join(pkg_dir, 'urdf', 'rover.urdf.xacro')
+    urdf_file = os.path.join(pkg_dir, 'urdf', 'rover.urdf. xacro')
     
     # =========================================================================
     # Launch Arguments for Calibration Overrides
     # =========================================================================
     
     # Camera position arguments
-    camera_x_arg = DeclareLaunchArgument('camera_x', default_value='0.135')
+    camera_x_arg = DeclareLaunchArgument('camera_x', default_value='0.13')
     camera_y_arg = DeclareLaunchArgument('camera_y', default_value='-0.0275')
-    camera_z_arg = DeclareLaunchArgument('camera_z', default_value='0.081')
+    camera_z_arg = DeclareLaunchArgument('camera_z', default_value='0.078')
     camera_roll_arg = DeclareLaunchArgument('camera_roll', default_value='0.0')
     camera_pitch_arg = DeclareLaunchArgument('camera_pitch', default_value='-0.2751')
     camera_yaw_arg = DeclareLaunchArgument('camera_yaw', default_value='0.0')
     
     # ToF position arguments
-    tof_x_arg = DeclareLaunchArgument('tof_x', default_value='0.135')
+    tof_x_arg = DeclareLaunchArgument('tof_x', default_value='0.13')
     tof_y_arg = DeclareLaunchArgument('tof_y', default_value='0.014')
-    tof_z_arg = DeclareLaunchArgument('tof_z', default_value='0.081')
+    tof_z_arg = DeclareLaunchArgument('tof_z', default_value='0.078')
     tof_roll_arg = DeclareLaunchArgument('tof_roll', default_value='0.0')
     tof_pitch_arg = DeclareLaunchArgument('tof_pitch', default_value='-0.2751')
     tof_yaw_arg = DeclareLaunchArgument('tof_yaw', default_value='0.0')
@@ -51,7 +51,7 @@ def generate_launch_description():
     # IMU position arguments
     imu_x_arg = DeclareLaunchArgument('imu_x', default_value='0.0')
     imu_y_arg = DeclareLaunchArgument('imu_y', default_value='0.0')
-    imu_z_arg = DeclareLaunchArgument('imu_z', default_value='0.045')
+    imu_z_arg = DeclareLaunchArgument('imu_z', default_value='0.046')
     imu_roll_arg = DeclareLaunchArgument('imu_roll', default_value='0.0')
     imu_pitch_arg = DeclareLaunchArgument('imu_pitch', default_value='0.0')
     imu_yaw_arg = DeclareLaunchArgument('imu_yaw', default_value='0.0')
