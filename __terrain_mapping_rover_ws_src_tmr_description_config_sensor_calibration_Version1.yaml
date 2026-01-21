@@ -1,0 +1,137 @@
+# =============================================================================
+# Sensor Calibration Data for Terrain Mapping Rover
+# =============================================================================
+#
+# This file stores calibrated sensor positions and orientations.
+# Values are in meters and radians.
+#
+# Coordinate System:
+#   X: Forward (positive)
+#   Y: Left (positive)
+#   Z: Up (positive)
+#
+# Measured from base_link center (center of robot, wheel axle height)
+#
+# Last Calibration Date: [Update after calibration]
+# Calibrated By: [Your name]
+#
+# =============================================================================
+
+# =============================================================================
+# IMU Calibration (MPU6050)
+# =============================================================================
+imu: 
+  # Position relative to base_link (meters)
+  position:
+    x: 0.0       # Centered front/back
+    y: 0.0       # Centered left/right
+    z: 0.046     # 4.6 cm above base_link
+  
+  # Orientation relative to base_link (radians)
+  # Assuming IMU is mounted flat with X forward
+  orientation:
+    roll: 0.0    # No roll
+    pitch: 0.0   # No pitch
+    yaw:  0.0     # X axis pointing forward
+  
+  # IMU axis alignment (how IMU axes map to robot axes)
+  # Standard: IMU X = Robot X, IMU Y = Robot Y, IMU Z = Robot Z
+  axis_mapping:
+    imu_x_to_robot:  "x"   # IMU X maps to Robot X
+    imu_y_to_robot: "y"   # IMU Y maps to Robot Y
+    imu_z_to_robot: "z"   # IMU Z maps to Robot Z
+    invert_x: false
+    invert_y: false
+    invert_z: false
+  
+  # Calibration offsets (from calibration procedure)
+  offsets:
+    accel_x: 0.0
+    accel_y: 0.0
+    accel_z: 0.0
+    gyro_x: 0.0
+    gyro_y:  0.0
+    gyro_z: 0.0
+
+# =============================================================================
+# RGB Camera Calibration (IMX500)
+# =============================================================================
+camera:
+  # Position relative to base_link (meters)
+  position:
+    x: 0.13      # 13 cm forward
+    y: -0.0275   # 2.75 cm to the right (negative Y)
+    z: 0.078     # 7.8 cm above base_link
+  
+  # Orientation relative to base_link (radians)
+  orientation:
+    roll: 0.0        # No roll
+    pitch: -0.2751   # -15.76° tilted down
+    yaw: 0.0         # Facing forward
+  
+  # Camera intrinsics (from camera calibration)
+  intrinsics:
+    width: 1280
+    height: 720
+    fx: 900.0        # Focal length X (pixels)
+    fy: 900.0        # Focal length Y (pixels)
+    cx: 640.0        # Principal point X (pixels)
+    cy: 360.0        # Principal point Y (pixels)
+  
+  # Distortion coefficients (plumb_bob model)
+  distortion:
+    model: "plumb_bob"
+    k1: 0.0
+    k2: 0.0
+    p1: 0.0
+    p2: 0.0
+    k3: 0.0
+
+# =============================================================================
+# ToF Camera Calibration (Arducam B0410)
+# =============================================================================
+tof:
+  # Position relative to base_link (meters)
+  position:
+    x: 0.13      # 13 cm forward
+    y: 0.014     # 1.4 cm to the left (positive Y)
+    z: 0.078     # 7.8 cm above base_link
+  
+  # Orientation relative to base_link (radians)
+  orientation:
+    roll: 0.0        # No roll
+    pitch: -0.2751   # -15.76° tilted down (same as RGB camera)
+    yaw: 0.0         # Facing forward
+  
+  # ToF sensor parameters
+  sensor:
+    width: 240
+    height: 180
+    fov_h: 70.0      # Horizontal FOV (degrees)
+    fov_v: 55.0      # Vertical FOV (degrees)
+    min_range: 0.2   # Minimum range (meters)
+    max_range: 4.0   # Maximum range (meters)
+
+# =============================================================================
+# Wheel Parameters (for odometry)
+# =============================================================================
+wheels:
+  # Wheel radius (meters) - 4" diameter = 2" radius
+  radius: 0.0508
+  
+  # Track width - distance between left and right wheel centers (meters)
+  track_width: 0.295
+  
+  # Wheelbase - distance between front and rear axles (meters)
+  wheelbase: 0.167
+  
+  # Encoder resolution
+  ticks_per_revolution: 1800
+
+# =============================================================================
+# Calibration History
+# =============================================================================
+calibration_history:
+  - date: "2024-01-01"
+    notes: "Initial measurements"
+    calibrated_by: "Bala"

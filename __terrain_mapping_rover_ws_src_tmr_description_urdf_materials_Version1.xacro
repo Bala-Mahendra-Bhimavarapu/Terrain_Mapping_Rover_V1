@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  
+  <!-- ===================================================================== -->
+  <!-- MATERIAL DEFINITIONS                                                   -->
+  <!-- ===================================================================== -->
+  <!-- 
+    Centralized material definitions for the rover URDF.
+    Used for visualization in RViz and Gazebo.
+  -->
+  
+  <!-- Dark gray for robot body -->
+  <material name="dark_gray">
+    <color rgba="0.3 0.3 0.3 1.0"/>
+  </material>
+  
+  <!-- Light gray for secondary components -->
+  <material name="light_gray">
+    <color rgba="0.6 0.6 0.6 1.0"/>
+  </material>
+  
+  <!-- Blue for RGB camera -->
+  <material name="blue">
+    <color rgba="0.0 0.0 0.8 1.0"/>
+  </material>
+  
+  <!-- Green for ToF camera -->
+  <material name="green">
+    <color rgba="0.0 0.8 0.0 1.0"/>
+  </material>
+  
+  <!-- Red for IMU and debug markers -->
+  <material name="red">
+    <color rgba="0.8 0.0 0.0 1.0"/>
+  </material>
+  
+  <!-- Black for wheels -->
+  <material name="black">
+    <color rgba="0.1 0.1 0.1 1.0"/>
+  </material>
+  
+  <!-- Orange for warning/calibration markers -->
+  <material name="orange">
+    <color rgba="1.0 0.5 0.0 1.0"/>
+  </material>
+  
+  <!-- Yellow for sensor FOV visualization -->
+  <material name="yellow">
+    <color rgba="1.0 1.0 0.0 0.3"/>
+  </material>
+  
+  <!-- Transparent for collision volumes -->
+  <material name="transparent">
+    <color rgba="1.0 1.0 1.0 0.2"/>
+  </material>
+
+</robot>

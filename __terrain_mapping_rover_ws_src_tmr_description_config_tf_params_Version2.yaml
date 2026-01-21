@@ -1,0 +1,140 @@
+# =============================================================================
+# TF Configuration for Terrain Mapping Rover
+# =============================================================================
+#
+# This file configures the TF tree publishing rates and frame IDs. 
+#
+# TF Tree Structure:
+#   map (from SLAM)
+#    └── odom (from EKF or wheel odometry)
+#         └── base_footprint (on ground plane)
+#              └── base_link (center of robot)
+#                   ├── front_left_wheel
+#                   ├── front_right_wheel
+#                   ├── back_left_wheel
+#                   ├── back_right_wheel
+#                   ├── imu_link
+#                   ├── camera_link
+#                   │    └── camera_optical_frame
+#                   └── tof_link
+#                        └── tof_optical_frame
+#
+# =============================================================================
+
+# =============================================================================
+# Frame IDs
+# =============================================================================
+frames:
+  # World frames
+  map_frame: "map"
+  odom_frame: "odom"
+  
+  # Robot frames
+  base_footprint_frame: "base_footprint"
+  base_link_frame: "base_link"
+  
+  # Sensor frames
+  imu_frame: "imu_link"
+  camera_frame: "camera_link"
+  camera_optical_frame: "camera_optical_frame"
+  tof_frame: "tof_link"
+  tof_optical_frame:  "tof_optical_frame"
+  
+  # Wheel frames
+  front_left_wheel_frame: "front_left_wheel"
+  front_right_wheel_frame: "front_right_wheel"
+  back_left_wheel_frame: "back_left_wheel"
+  back_right_wheel_frame: "back_right_wheel"
+
+# =============================================================================
+# Robot State Publisher Configuration
+# =============================================================================
+robot_state_publisher:
+  ros__parameters:
+    # Publishing rate for TF (Hz)
+    publish_frequency: 50.0
+    
+    # Whether to ignore timestamp and use wall clock
+    ignore_timestamp: false
+    
+    # Use simulation time
+    use_sim_time:  false
+
+# =============================================================================
+# Static Transform Publisher Configuration
+# =============================================================================
+# Note: Static transforms are published from the URDF via robot_state_publisher. 
+# The values below are for reference and debugging. 
+
+static_transforms:
+  # base_footprint to base_link
+  base_footprint_to_base_link:
+    parent:  "base_footprint"
+    child: "base_link"
+    translation: [0.0, 0.0, 0.0508]  # 2 inches up
+    rotation_rpy: [0.0, 0.0, 0.0]
+  
+  # base_link to imu_link
+  base_link_to_imu: 
+    parent: "base_link"
+    child: "imu_link"
+    translation: [0.0, 0.0, 0.046]   # 4.6cm up, centered
+    rotation_rpy: [0.0, 0.0, 0.0]
+  
+  # base_link to camera_link
+  base_link_to_camera: 
+    parent: "base_link"
+    child: "camera_link"
+    translation: [0.13, -0.0275, 0.078]  # 13cm forward, 2.75cm right, 7.8cm up
+    rotation_rpy: [0.0, -0.2751, 0.0]    # -15.76° pitch (tilted down)
+  
+  # camera_link to camera_optical_frame
+  camera_to_optical: 
+    parent: "camera_link"
+    child: "camera_optical_frame"
+    translation:  [0.0, 0.0, 0.0]
+    rotation_rpy: [-1.5708, 0.0, -1.5708]  # ROS camera convention
+  
+  # base_link to tof_link
+  base_link_to_tof:
+    parent: "base_link"
+    child: "tof_link"
+    translation: [0.13, 0.014, 0.078]    # 13cm forward, 1.4cm left, 7.8cm up
+    rotation_rpy: [0.0, -0.2751, 0.0]    # -15.76° pitch
+  
+  # tof_link to tof_optical_frame
+  tof_to_optical:
+    parent: "tof_link"
+    child: "tof_optical_frame"
+    translation: [0.0, 0.0, 0.0]
+    rotation_rpy: [-1.5708, 0.0, -1.5708]
+
+# =============================================================================
+# Dynamic Transform Configuration
+# =============================================================================
+# These transforms are published at runtime by other nodes. 
+
+dynamic_transforms:
+  # odom -> base_link:  Published by VEX serial node or EKF
+  odom_to_base_link:
+    publisher: "vex_serial_node"  # or "ekf_node" in Phase 2
+    rate_hz: 50.0
+  
+  # map -> odom: Published by SLAM (future Phase 3)
+  map_to_odom:
+    publisher: "slam_toolbox"
+    rate_hz: 10.0
+
+# =============================================================================
+# TF Debugging
+# =============================================================================
+debug: 
+  # Enable TF echo in logs
+  enable_tf_echo:  false
+  
+  # Monitor these transform pairs
+  monitor_transforms:
+    - ["odom", "base_link"]
+    - ["base_link", "camera_optical_frame"]
+    - ["base_link", "tof_optical_frame"]
+    - ["base_link", "imu_link"]

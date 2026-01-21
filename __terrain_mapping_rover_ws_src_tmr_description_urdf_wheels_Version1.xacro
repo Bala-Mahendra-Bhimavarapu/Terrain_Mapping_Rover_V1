@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  
+  <!-- ===================================================================== -->
+  <!-- WHEEL MACROS                                                           -->
+  <!-- ===================================================================== -->
+  
+  <!-- Include materials -->
+  <xacro:include filename="$(find tmr_description)/urdf/materials.xacro"/>
+  
+  <!-- PI constant -->
+  <xacro:property name="pi" value="3.14159265359"/>
+  
+  <!-- ===================================================================== -->
+  <!-- WHEEL LINK MACRO                                                       -->
+  <!-- ===================================================================== -->
+  <xacro:macro name="wheel_link" params="name radius width">
+    
+    <link name="${name}">
+      <visual>
+        <geometry>
+          <cylinder radius="${radius}" length="${width}"/>
+        </geometry>
+        <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+        <material name="black"/>
+      </visual>
+      <collision>
+        <geometry>
+          <cylinder radius="${radius}" length="${width}"/>
+        </geometry>
+        <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+      </collision>
+      <inertial>
+        <mass value="0.5"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia 
+          ixx="${0.5 * 0.5 * radius * radius}" 
+          ixy="0" 
+          ixz="0" 
+          iyy="${0.5 * 0.5 * radius * radius}" 
+          iyz="0" 
+          izz="${0.5 * radius * radius}"/>
+      </inertial>
+    </link>
+    
+  </xacro:macro>
+  
+  <!-- ===================================================================== -->
+  <!-- WHEEL JOINT MACRO                                                      -->
+  <!-- ===================================================================== -->
+  <xacro: macro name="wheel_joint" params="name parent_link x y z">
+    
+    <!-- Fixed joint for visualization (actual motion is via odom transform) -->
+    <joint name="${name}_joint" type="fixed">
+      <parent link="${parent_link}"/>
+      <child link="${name}"/>
+      <origin xyz="${x} ${y} ${z}" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
+    </joint>
+    
+  </xacro:macro>
+  
+  <!-- ===================================================================== -->
+  <!-- COMPLETE WHEEL MACRO (LINK + JOINT)                                    -->
+  <!-- ===================================================================== -->
+  <xacro: macro name="wheel" params="name parent_link x y z radius width">
+    
+    <!-- Create the wheel link -->
+    <xacro:wheel_link name="${name}" radius="${radius}" width="${width}"/>
+    
+    <!-- Create the wheel joint -->
+    <xacro:wheel_joint name="${name}" parent_link="${parent_link}" x="${x}" y="${y}" z="${z}"/>
+    
+  </xacro:macro>
+
+</robot>
