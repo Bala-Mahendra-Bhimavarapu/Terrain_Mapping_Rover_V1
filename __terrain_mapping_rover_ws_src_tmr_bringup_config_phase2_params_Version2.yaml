@@ -1,0 +1,119 @@
+# =============================================================================
+# Phase 2 Testing Parameters - TF Setup & Static Transforms
+# =============================================================================
+#
+# Configuration for Phase 2 TF testing and validation.
+#
+# Phase 2 Goals:
+# - Verify complete TF tree
+# - Validate static transforms
+# - Confirm sensor frame positions
+# - Test TF lookups
+#
+# =============================================================================
+
+# =============================================================================
+# Robot State Publisher Configuration
+# =============================================================================
+robot_state_publisher:
+  ros__parameters:
+    # Publishing rate for TF (Hz)
+    publish_frequency: 50.0
+    
+    # Whether to ignore timestamp
+    ignore_timestamp: false
+    
+    # Use simulation time
+    use_sim_time: false
+
+# =============================================================================
+# Expected TF Tree Structure
+# =============================================================================
+# Used by validation scripts to verify TF tree
+
+expected_tf_tree:
+  # Parent -> Child relationships
+  transforms:
+    - parent:  "map"
+      child: "odom"
+      type: "dynamic"  # From SLAM (future)
+      
+    - parent: "odom"
+      child: "base_footprint"
+      type: "dynamic"  # From EKF or wheel odometry
+      
+    - parent: "base_footprint"
+      child: "base_link"
+      type: "static"
+      expected_translation: [0.0, 0.0, 0.0508]
+      
+    - parent: "base_link"
+      child: "imu_link"
+      type: "static"
+      expected_translation: [0.0, 0.0, 0.046]
+      
+    - parent:  "base_link"
+      child: "camera_link"
+      type:  "static"
+      expected_translation: [0.13, -0.0275, 0.078]
+      
+    - parent:  "camera_link"
+      child: "camera_optical_frame"
+      type: "static"
+      
+    - parent: "base_link"
+      child: "tof_link"
+      type:  "static"
+      expected_translation: [0.13, 0.014, 0.078]
+      
+    - parent: "tof_link"
+      child: "tof_optical_frame"
+      type: "static"
+      
+    - parent: "base_link"
+      child: "front_left_wheel"
+      type: "static"
+      
+    - parent: "base_link"
+      child: "front_right_wheel"
+      type:  "static"
+      
+    - parent: "base_link"
+      child: "back_left_wheel"
+      type: "static"
+      
+    - parent: "base_link"
+      child: "back_right_wheel"
+      type: "static"
+
+# =============================================================================
+# TF Test Parameters
+# =============================================================================
+tf_test:
+  ros__parameters:
+    # Timeout for TF lookups (seconds)
+    lookup_timeout: 2.0
+    
+    # Position tolerance for validation (meters)
+    position_tolerance: 0.01
+    
+    # Orientation tolerance for validation (radians)
+    orientation_tolerance: 0.05
+    
+    # Frames to validate
+    critical_frames:
+      - "base_link"
+      - "imu_link"
+      - "camera_optical_frame"
+      - "tof_optical_frame"
+    
+    # Transform pairs to test lookup
+    test_lookups:
+      - source: "base_link"
+        target: "camera_optical_frame"
+      - source: "base_link"
+        target: "tof_optical_frame"
+      - source: "base_link"
+        target: "imu_link"
+      - source: "odom"
+        target: "base_link"

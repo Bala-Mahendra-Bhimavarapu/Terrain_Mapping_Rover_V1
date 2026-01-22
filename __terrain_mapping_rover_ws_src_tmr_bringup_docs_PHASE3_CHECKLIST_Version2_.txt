@@ -1,0 +1,59 @@
+# Phase 3 Completion Checklist
+
+## Sensor Inputs
+- [ ] Wheel odometry publishing at ≥30 Hz
+- [ ] IMU data publishing at ≥50 Hz
+- [ ] Both sensors have valid covariance matrices
+- [ ] Timestamps are synchronized
+
+## EKF Configuration
+- [ ] EKF node starts without errors
+- [ ] Correct input topics configured
+- [ ] 2D mode enabled for ground robot
+- [ ] TF publishing enabled
+
+## EKF Output
+- [ ] Filtered odometry publishing at ≥30 Hz
+- [ ] Position values are valid (no NaN)
+- [ ] Orientation is valid quaternion
+- [ ] Covariance is positive definite
+- [ ] Frame IDs correct (odom → base_link)
+
+## TF Publishing
+- [ ] EKF publishes odom → base_link transform
+- [ ] Transform updates with robot motion
+- [ ] No TF conflicts with other nodes
+
+## Sensor Fusion
+- [ ] IMU yaw rate being used
+- [ ] IMU acceleration being used (if configured)
+- [ ] Filtered output differs from raw wheel odometry
+- [ ] Fusion improves rotation accuracy
+
+## Motion Tests
+- [ ] Position updates correctly during forward motion
+- [ ] Position updates correctly during backward motion
+- [ ] Rotation tracked accurately
+- [ ] Combined motion (arc) works correctly
+
+## Accuracy Tests
+- [ ] 1m forward:  error < 10cm
+- [ ] 360° rotation: error < 10°
+- [ ] Square pattern return: error < 15cm
+- [ ] Stationary drift: < 5cm/min
+
+## Diagnostics
+- [ ] EKF diagnostics show healthy status
+- [ ] No warning messages in logs
+- [ ] Covariance stays bounded
+
+## Integration
+- [ ] Works with teleop control
+- [ ] Works during continuous operation (10+ min)
+- [ ] Recovers from sensor dropouts
+
+---
+
+**Completed By:** _________________
+**Date:** _________________
+**Notes:**
