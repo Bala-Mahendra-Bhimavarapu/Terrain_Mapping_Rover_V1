@@ -1,0 +1,244 @@
+#!/usr/bin/env python3
+"""
+Odometry Comparison Node
+
+Compares raw wheel odometry with EKF-filtered odometry.
+Useful for evaluating EKF performance and tuning.
+
+Usage:
+    ros2 run tmr_localization odom_comparison.py
+"""
+
+import rclpy
+from rclpy.node import Node
+
+from nav_msgs.msg import Odometry
+from geometry_msgs. msg import PoseStamped
+from std_msgs.msg import Float64
+
+import math
+import time
+import os
+from typing import Optional
+from collections import deque
+
+
+class OdomComparisonNode(Node):
+    """Compares raw and filtered odometry."""
+    
+    def __init__(self):
+        super().__init__('odom_comparison')
+        
+        # Parameters
+        self.declare_parameter('raw_odom_topic', '/vex/odom_raw')
+        self.declare_parameter('filtered_odom_topic', '/odometry/filtered')
+        self.declare_parameter('publish_rate', 10.0)
+        self.declare_parameter('display_mode', True)
+        
+        raw_topic = self.get_parameter('raw_odom_topic').value
+        filtered_topic = self.get_parameter('filtered_odom_topic').value
+        publish_rate = self.get_parameter('publish_rate').value
+        self.display_mode = self.get_parameter('display_mode').value
+        
+        # State
+        self.latest_raw: Optional[Odometry] = None
+        self.latest_filtered: Optional[Odometry] = None
+        
+        # History for statistics
+        self.position_errors = deque(maxlen=1000)
+        self.orientation_errors = deque(maxlen=1000)
+        self.velocity_errors = deque(maxlen=1000)
+        
+        # Tracking for path length
+        self.raw_path_length = 0.0
+        self.filtered_path_length = 0.0
+        self.last_raw_pos = None
+        self.last_filtered_pos = None
+        
+        # Subscribers
+        self. raw_sub = self.create_subscription(
+            Odometry, raw_topic, self.raw_callback, 10)
+        self.filtered_sub = self.create_subscription(
+            Odometry, filtered_topic, self.filtered_callback, 10)
+        
+        # Publishers for error metrics
+        self.position_error_pub = self.create_publisher(
+            Float64, 'odom_comparison/position_error', 10)
+        self.orientation_error_pub = self.create_publisher(
+            Float64, 'odom_comparison/orientation_error', 10)
+        self.velocity_error_pub = self.create_publisher(
+            Float64, 'odom_comparison/velocity_error', 10)
+        
+        # Timer
+        self.timer = self.create_timer(1.0 / publish_rate, self.compare_callback)
+        
+        # Display timer (slower)
+        if self.display_mode:
+            self.display_timer = self. create_timer(0.5, self.display_callback)
+        
+        self.get_logger().info("Odometry Comparison started")
+        self.get_logger().info(f"  Raw topic:  {raw_topic}")
+        self.get_logger().info(f"  Filtered topic: {filtered_topic}")
+    
+    def raw_callback(self, msg:  Odometry):
+        # Update path length
+        if self.last_raw_pos is not None: 
+            dx = msg.pose.pose.position.x - self.last_raw_pos[0]
+            dy = msg. pose.pose.position.y - self.last_raw_pos[1]
+            self.raw_path_length += math.sqrt(dx**2 + dy**2)
+        
+        self.last_raw_pos = (msg.pose.pose.position. x, msg.pose.pose. position.y)
+        self.latest_raw = msg
+    
+    def filtered_callback(self, msg: Odometry):
+        # Update path length
+        if self. last_filtered_pos is not None:
+            dx = msg.pose.pose.position.x - self.last_filtered_pos[0]
+            dy = msg.pose.pose.position.y - self.last_filtered_pos[1]
+            self.filtered_path_length += math.sqrt(dx**2 + dy**2)
+        
+        self.last_filtered_pos = (msg.pose.pose.position.x, msg.pose.pose.position.y)
+        self.latest_filtered = msg
+    
+    def _get_yaw(self, orientation) -> float:
+        """Extract yaw from quaternion."""
+        q = orientation
+        siny_cosp = 2.0 * (q.w * q. z + q.x * q. y)
+        cosy_cosp = 1.0 - 2.0 * (q. y * q.y + q. z * q.z)
+        return math.atan2(siny_cosp, cosy_cosp)
+    
+    def compare_callback(self):
+        """Compare raw and filtered odometry."""
+        if self.latest_raw is None or self.latest_filtered is None:
+            return
+        
+        # Position error
+        raw_pos = self.latest_raw.pose.pose.position
+        filt_pos = self.latest_filtered.pose.pose.position
+        
+        position_error = math.sqrt(
+            (raw_pos.x - filt_pos.x)**2 + 
+            (raw_pos.y - filt_pos.y)**2
+        )
+        
+        # Orientation error
+        raw_yaw = self._get_yaw(self.latest_raw. pose.pose.orientation)
+        filt_yaw = self._get_yaw(self.latest_filtered.pose.pose.orientation)
+        
+        orientation_error = abs(raw_yaw - filt_yaw)
+        if orientation_error > math.pi:
+            orientation_error = 2 * math.pi - orientation_error
+        
+        # Velocity error
+        raw_vel = self.latest_raw.twist. twist.linear. x
+        filt_vel = self.latest_filtered.twist. twist.linear.x
+        velocity_error = abs(raw_vel - filt_vel)
+        
+        # Store for statistics
+        self.position_errors. append(position_error)
+        self.orientation_errors.append(orientation_error)
+        self.velocity_errors.append(velocity_error)
+        
+        # Publish errors
+        pos_err_msg = Float64()
+        pos_err_msg.data = position_error
+        self.position_error_pub.publish(pos_err_msg)
+        
+        ori_err_msg = Float64()
+        ori_err_msg.data = orientation_error
+        self.orientation_error_pub. publish(ori_err_msg)
+        
+        vel_err_msg = Float64()
+        vel_err_msg. data = velocity_error
+        self.velocity_error_pub.publish(vel_err_msg)
+    
+    def display_callback(self):
+        """Update terminal display."""
+        if not self.display_mode:
+            return
+        
+        os.system('clear' if os.name == 'posix' else 'cls')
+        
+        print("╔" + "═"*62 + "╗")
+        print("║" + "  ODOMETRY COMPARISON (Raw vs EKF Filtered)".center(62) + "║")
+        print("╠" + "═"*62 + "╣")
+        
+        # Current positions
+        print("║ CURRENT POSITION: ".ljust(63) + "║")
+        if self.latest_raw: 
+            pos = self.latest_raw.pose. pose.position
+            yaw = self._get_yaw(self.latest_raw.pose.pose.orientation)
+            print(f"║   Raw:       X={pos.x:+8.4f}  Y={pos.y:+8.4f}  Yaw={math.degrees(yaw):+7.2f}°".ljust(63) + "║")
+        else:
+            print("║   Raw:      No data". ljust(63) + "║")
+        
+        if self. latest_filtered:
+            pos = self.latest_filtered.pose. pose.position
+            yaw = self._get_yaw(self.latest_filtered.pose.pose.orientation)
+            print(f"║   Filtered: X={pos.x:+8.4f}  Y={pos.y:+8.4f}  Yaw={math.degrees(yaw):+7.2f}°".ljust(63) + "║")
+        else:
+            print("║   Filtered: No data".ljust(63) + "║")
+        
+        print("╠" + "═"*62 + "╣")
+        
+        # Current velocities
+        print("║ CURRENT VELOCITY:".ljust(63) + "║")
+        if self.latest_raw:
+            vx = self.latest_raw. twist.twist.linear.x
+            wz = self. latest_raw.twist.twist. angular.z
+            print(f"║   Raw:      Vx={vx:+6.3f} m/s  Wz={wz:+6.3f} rad/s".ljust(63) + "║")
+        
+        if self.latest_filtered:
+            vx = self.latest_filtered.twist.twist.linear.x
+            wz = self.latest_filtered.twist.twist.angular.z
+            print(f"║   Filtered:  Vx={vx:+6.3f} m/s  Wz={wz:+6.3f} rad/s".ljust(63) + "║")
+        
+        print("╠" + "═"*62 + "╣")
+        
+        # Error statistics
+        print("║ ERROR STATISTICS:".ljust(63) + "║")
+        if self.position_errors:
+            avg_pos = sum(self.position_errors) / len(self.position_errors)
+            max_pos = max(self.position_errors)
+            print(f"║   Position Error:     Avg={avg_pos:.4f}m  Max={max_pos:.4f}m".ljust(63) + "║")
+        
+        if self.orientation_errors:
+            avg_ori = sum(self.orientation_errors) / len(self.orientation_errors)
+            max_ori = max(self.orientation_errors)
+            print(f"║   Orientation Error:  Avg={math.degrees(avg_ori):.2f}°  Max={math. degrees(max_ori):.2f}°".ljust(63) + "║")
+        
+        if self.velocity_errors:
+            avg_vel = sum(self.velocity_errors) / len(self.velocity_errors)
+            max_vel = max(self.velocity_errors)
+            print(f"║   Velocity Error:    Avg={avg_vel:.4f}m/s  Max={max_vel:.4f}m/s".ljust(63) + "║")
+        
+        print("╠" + "═"*62 + "╣")
+        
+        # Path lengths
+        print("║ PATH LENGTH:".ljust(63) + "║")
+        print(f"║   Raw:      {self.raw_path_length:.3f} m". ljust(63) + "║")
+        print(f"║   Filtered: {self.filtered_path_length:.3f} m".ljust(63) + "║")
+        diff = abs(self.raw_path_length - self.filtered_path_length)
+        print(f"║   Difference: {diff:.3f} m ({diff/max(self.raw_path_length, 0.001)*100:.1f}%)".ljust(63) + "║")
+        
+        print("╠" + "═"*62 + "╣")
+        print("║  Press Ctrl+C to exit".ljust(63) + "║")
+        print("╚" + "═"*62 + "╝")
+
+
+def main():
+    rclpy.init()
+    
+    node = OdomComparisonNode()
+    
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt: 
+        pass
+    finally:
+        node.destroy_node()
+        rclpy.shutdown()
+
+
+if __name__ == '__main__': 
+    main()

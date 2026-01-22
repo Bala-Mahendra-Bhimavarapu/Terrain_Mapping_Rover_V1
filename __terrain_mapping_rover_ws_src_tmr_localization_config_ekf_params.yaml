@@ -1,0 +1,182 @@
+# =============================================================================
+# EKF Configuration for Terrain Mapping Rover
+# =============================================================================
+#
+# This is the main configuration for robot_localization's Extended Kalman Filter. 
+# It fuses wheel odometry from VEX and IMU data from MPU6050.
+#
+# Reference:  http://docs.ros.org/en/melodic/api/robot_localization/html/state_estimation_nodes. html
+#
+# =============================================================================
+
+# =============================================================================
+# EKF Node Configuration
+# =============================================================================
+ekf_filter_node:
+  ros__parameters: 
+    # =========================================================================
+    # General Settings
+    # =========================================================================
+    
+    # Frequency of filter updates (Hz)
+    # Should be >= highest sensor rate
+    frequency: 50.0
+    
+    # Period to wait before publishing first message
+    sensor_timeout: 0.1
+    
+    # Whether to broadcast TF
+    publish_tf: true
+    
+    # Whether to publish acceleration
+    publish_acceleration: false
+    
+    # Use simulation time (set to true if using Gazebo)
+    use_sim_time: false
+    
+    # =========================================================================
+    # Frame Configuration
+    # =========================================================================
+    
+    # Frame IDs - must match your URDF and other nodes
+    map_frame: map              # Global fixed frame (from SLAM)
+    odom_frame: odom            # Odometry frame
+    base_link_frame: base_link  # Robot base frame
+    world_frame: odom           # Which frame to use as world (odom for local, map for global)
+    
+    # =========================================================================
+    # Transform Settings
+    # =========================================================================
+    
+    # Transform timeout for TF lookups
+    transform_time_offset: 0.0
+    transform_timeout: 0.0
+    
+    # =========================================================================
+    # Filter Settings
+    # =========================================================================
+    
+    # Use 2D mode (constrain to X, Y, Yaw only)
+    # Recommended for wheeled ground robots
+    two_d_mode: true
+    
+    # Smoothing window (0 = disabled)
+    smooth_lagged_data: false
+    history_length: 0. 0
+    
+    # Enable debug output
+    print_diagnostics: true
+    debug:  false
+    
+    # =========================================================================
+    # Initial State and Covariance
+    # =========================================================================
+    
+    # Initial state estimate [x, y, z, roll, pitch, yaw, vx, vy, vz, vroll, vpitch, vyaw, ax, ay, az]
+    # All zeros means start at origin with no velocity
+    initial_state:  [0.0, 0.0, 0.0,
+                    0.0, 0.0, 0.0,
+                    0.0, 0.0, 0.0,
+                    0.0, 0.0, 0.0,
+                    0.0, 0.0, 0.0]
+    
+    # Initial estimate covariance (diagonal values)
+    # Higher values = less certainty in initial state
+    initial_estimate_covariance: [1e-9, 0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
+                                  0.0,  1e-9, 0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
+                                  0.0,  0.0,  1e-9, 0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
+                                  0.0,  0.0,  0.0,  1e-9, 0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
+                                  0.0,  0.0,  0.0,  0.0,  1e-9, 0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
+                                  0.0,  0.0,  0.0,  0.0,  0.0,  1e-9, 0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
+                                  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  1e-9, 0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
+                                  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  1e-9, 0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
+                                  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  1e-9, 0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
+                                  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  1e-9, 0.0,  0.0,  0.0,  0.0,  0.0,
+                                  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  1e-9, 0.0,  0.0,  0.0,  0.0,
+                                  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  1e-9, 0.0,  0.0,  0.0,
+                                  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  1e-9, 0.0,  0.0,
+                                  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  1e-9, 0.0,
+                                  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  1e-9]
+    
+    # =========================================================================
+    # Process Noise Covariance
+    # =========================================================================
+    # How much the state is expected to change between updates
+    # Higher values = filter trusts sensors more, lower = trusts model more
+    #
+    # Format: 15x15 matrix for [x, y, z, roll, pitch, yaw, vx, vy, vz, vroll, vpitch, vyaw, ax, ay, az]
+    # Only diagonal values shown for clarity
+    
+    process_noise_covariance: [0.05,  0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,
+                               0.0,   0.05,  0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,
+                               0.0,   0.0,   0.06,  0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,
+                               0.0,   0.0,   0.0,   0.03,  0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,
+                               0.0,   0.0,   0.0,   0.0,   0.03,  0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,
+                               0.0,   0.0,   0.0,   0.0,   0.0,   0.06,  0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,
+                               0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.025, 0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,
+                               0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.025, 0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,
+                               0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.04,  0.0,   0.0,   0.0,   0.0,   0.0,   0.0,
+                               0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.01,  0.0,   0.0,   0.0,   0.0,   0.0,
+                               0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.01,  0.0,   0.0,   0.0,   0.0,
+                               0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.02,  0.0,   0.0,   0.0,
+                               0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.01,  0.0,   0.0,
+                               0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.01,  0.0,
+                               0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.015]
+    
+    # =========================================================================
+    # SENSOR 0: Wheel Odometry (from VEX via vex_serial_node)
+    # =========================================================================
+    # Topic: /odom_raw (or /vex/odom_raw with namespace)
+    # Message type: nav_msgs/Odometry
+    # Provides: position (x, y), orientation (yaw), velocity (vx, vyaw)
+    
+    odom0:  /vex/odom_raw
+    odom0_config:  [true,  true,  false,   # x, y, z position
+                   false, false, true,    # roll, pitch, yaw orientation
+                   true,  false, false,   # vx, vy, vz velocity
+                   false, false, true,    # vroll, vpitch, vyaw angular velocity
+                   false, false, false]   # ax, ay, az acceleration
+    
+    # Set to true if odometry is in a different frame than base_link
+    odom0_differential: false
+    
+    # Set to true if using velocities from twist, false if using pose
+    odom0_relative: false
+    
+    # Queue size for sensor data
+    odom0_queue_size: 10
+    
+    # Reject measurements that are too old
+    odom0_nodelay: false
+    
+    # =========================================================================
+    # SENSOR 1: IMU Data (from MPU6050 via imu_node)
+    # =========================================================================
+    # Topic: /imu/data
+    # Message type: sensor_msgs/Imu
+    # Provides: orientation (yaw), angular velocity (vyaw), linear acceleration
+    
+    imu0: /imu/data
+    imu0_config: [false, false, false,    # x, y, z (IMU doesn't provide position)
+                  false, false, true,     # roll, pitch, yaw (use yaw only in 2D)
+                  false, false, false,    # vx, vy, vz (not from IMU)
+                  false, false, true,     # vroll, vpitch, vyaw (use yaw rate)
+                  true,  true,  false]    # ax, ay, az (use x,y acceleration)
+    
+    # Don't use differential mode for IMU orientation
+    imu0_differential:  false
+    
+    # IMU orientation is absolute (from complementary filter)
+    imu0_relative: false
+    
+    # Queue size
+    imu0_queue_size: 10
+    
+    # Don't remove gravitational acceleration (already removed by driver)
+    imu0_remove_gravitational_acceleration: true
+    
+    # =========================================================================
+    # Dynamic Reconfigure
+    # =========================================================================
+    # Allow parameters to be changed at runtime
+    dynamic_process_noise_covariance: false

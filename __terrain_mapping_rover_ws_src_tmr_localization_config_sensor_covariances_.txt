@@ -1,0 +1,85 @@
+# =============================================================================
+# Sensor Covariance Configuration
+# =============================================================================
+#
+# This file defines the measurement covariances for each sensor.
+# These values should be updated after sensor calibration.
+#
+# Covariance represents the uncertainty in each measurement.
+# Format: 6x6 matrix for [x, y, z, roll, pitch, yaw]
+# Or 3x3 for specific measurements
+#
+# =============================================================================
+
+# =============================================================================
+# Wheel Odometry Covariances
+# =============================================================================
+# These values should match what vex_serial_node publishes
+# Can be overridden here for EKF tuning
+
+wheel_odometry: 
+  # Pose covariance (6x6)
+  # [x, y, z, roll, pitch, yaw]
+  pose_covariance: 
+    # Position uncertainty increases with distance traveled
+    x_variance: 0.01              # meters^2
+    y_variance: 0.01              # meters^2
+    z_variance: 1000000.0         # Unused (2D), set very high
+    
+    # Orientation uncertainty
+    roll_variance: 1000000.0      # Unused (2D)
+    pitch_variance: 1000000.0     # Unused (2D)
+    yaw_variance: 0.03            # radians^2
+  
+  # Twist covariance (6x6)
+  # [vx, vy, vz, vroll, vpitch, vyaw]
+  twist_covariance:
+    vx_variance: 0.01             # (m/s)^2
+    vy_variance: 1000000.0        # Unused (differential drive)
+    vz_variance: 1000000.0        # Unused (2D)
+    
+    vroll_variance: 1000000.0     # Unused
+    vpitch_variance: 1000000.0    # Unused
+    vyaw_variance: 0.03           # (rad/s)^2
+
+# =============================================================================
+# IMU Covariances
+# =============================================================================
+# These values should match what imu_node publishes
+
+imu:
+  # Orientation covariance (from complementary filter)
+  # Only yaw is used in 2D mode
+  orientation_covariance:
+    roll_variance: 0.01           # radians^2
+    pitch_variance: 0.01          # radians^2
+    yaw_variance: 0.01            # radians^2 (most important for 2D)
+  
+  # Angular velocity covariance
+  angular_velocity_covariance: 
+    x_variance: 0.001             # (rad/s)^2
+    y_variance: 0.001             # (rad/s)^2
+    z_variance: 0.001             # (rad/s)^2 (yaw rate)
+  
+  # Linear acceleration covariance
+  linear_acceleration_covariance:
+    x_variance: 0.01              # (m/s^2)^2
+    y_variance: 0.01              # (m/s^2)^2
+    z_variance: 0.01              # (m/s^2)^2
+
+# =============================================================================
+# Scaling Factors
+# =============================================================================
+# Apply these multipliers to adjust covariances without editing above
+
+scaling: 
+  # Global multiplier for all wheel odometry covariances
+  wheel_odom_scale: 1.0
+  
+  # Global multiplier for all IMU covariances
+  imu_scale: 1.0
+  
+  # Condition-specific multipliers
+  stationary_scale: 0.5           # When robot is not moving
+  turning_scale: 1.5              # During pure rotation
+  high_speed_scale: 2.0           # At high speeds (>0.25 m/s)

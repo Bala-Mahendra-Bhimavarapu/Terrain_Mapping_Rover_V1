@@ -1,0 +1,130 @@
+# =============================================================================
+# EKF Tuning Parameters for Terrain Mapping Rover
+# =============================================================================
+#
+# This file contains tuning parameters that can be adjusted to optimize
+# the EKF performance for your specific robot and environment.
+#
+# TUNING GUIDE:
+# 1. Start with wheel odometry only, verify position tracking
+# 2. Add IMU, verify orientation improves
+# 3. Tune covariances based on observed errors
+# 4. Test on various surfaces and speeds
+#
+# =============================================================================
+
+# =============================================================================
+# Sensor Trust Levels
+# =============================================================================
+# These values control how much the EKF trusts each sensor. 
+# Lower covariance = higher trust
+# Higher covariance = lower trust
+
+sensor_trust: 
+  # Wheel odometry trust
+  # Decrease these if odometry is accurate, increase if wheels slip
+  wheel_odom: 
+    position_x: 0.01         # meters^2
+    position_y: 0.01         # meters^2
+    orientation_yaw: 0.03    # radians^2
+    velocity_x: 0.01         # (m/s)^2
+    velocity_yaw: 0.03       # (rad/s)^2
+  
+  # IMU trust
+  # Decrease if IMU is well-calibrated, increase if noisy
+  imu:
+    orientation_yaw: 0.01    # radians^2 (from complementary filter)
+    angular_velocity_yaw: 0.001  # (rad/s)^2
+    acceleration_x: 0.01     # (m/s^2)^2
+    acceleration_y: 0.01     # (m/s^2)^2
+
+# =============================================================================
+# Process Noise Tuning
+# =============================================================================
+# How much the robot's state is expected to change between updates. 
+# Higher values = filter responds faster to changes but is noisier
+# Lower values = smoother output but slower response
+
+process_noise: 
+  # Position process noise
+  position: 
+    x: 0.05                  # How much x can change per update
+    y: 0.05                  # How much y can change per update
+    yaw: 0.06               # How much yaw can change per update
+  
+  # Velocity process noise
+  velocity:
+    x: 0.025                 # Linear velocity change rate
+    yaw: 0.02               # Angular velocity change rate
+  
+  # Acceleration process noise (if using)
+  acceleration:
+    x:  0.01
+    y: 0.01
+
+# =============================================================================
+# Robot-Specific Parameters
+# =============================================================================
+# These should match your physical robot
+
+robot_params:
+  # Maximum expected velocities (used for sanity checking)
+  max_linear_velocity: 0.5     # m/s
+  max_angular_velocity: 1.0    # rad/s
+  
+  # Typical operating velocities
+  typical_linear_velocity: 0.2  # m/s
+  typical_angular_velocity: 0.3 # rad/s
+  
+  # Wheel slip factor (0 = no slip, 1 = 100% slip)
+  # Increase if driving on slippery surfaces
+  wheel_slip_factor: 0.05
+
+# =============================================================================
+# Surface-Specific Profiles
+# =============================================================================
+# Different surfaces may require different tuning
+
+profiles:
+  # Indoor/carpet/tile
+  indoor: 
+    wheel_odom_trust_multiplier: 1.0
+    imu_trust_multiplier: 1.0
+    process_noise_multiplier: 1.0
+  
+  # Outdoor/grass
+  outdoor_grass:
+    wheel_odom_trust_multiplier: 0.5   # Less trust (more slip)
+    imu_trust_multiplier: 1.2          # Slightly more IMU trust
+    process_noise_multiplier: 1.5      # Expect more variation
+  
+  # Outdoor/gravel
+  outdoor_gravel:
+    wheel_odom_trust_multiplier: 0.3   # Much less trust
+    imu_trust_multiplier: 1.5          # More IMU trust
+    process_noise_multiplier: 2.0      # Expect significant variation
+  
+  # Rough terrain
+  rough_terrain: 
+    wheel_odom_trust_multiplier: 0.2
+    imu_trust_multiplier: 0.8          # IMU may be noisy from vibration
+    process_noise_multiplier: 3.0
+
+# =============================================================================
+# Diagnostic Thresholds
+# =============================================================================
+# Used by diagnostics node to detect problems
+
+diagnostics:
+  # Maximum acceptable innovation (measurement - prediction)
+  max_position_innovation: 0.5    # meters
+  max_orientation_innovation: 0.3 # radians
+  max_velocity_innovation: 0.5    # m/s
+  
+  # Minimum acceptable update rates
+  min_odom_rate_hz: 20.0
+  min_imu_rate_hz: 50.0
+  
+  # Maximum acceptable covariance
+  max_position_covariance: 1.0    # meters^2
+  max_orientation_covariance: 0.5 # radians^2
