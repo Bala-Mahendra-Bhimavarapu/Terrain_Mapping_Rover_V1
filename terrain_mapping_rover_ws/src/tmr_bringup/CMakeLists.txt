@@ -19,16 +19,25 @@ install(DIRECTORY config/
   DESTINATION share/${PROJECT_NAME}/config
 )
 
-# Install all scripts
+# Install all scripts (Phase 1, 2, and 3)
 install(PROGRAMS
+  # Phase 1 scripts
   scripts/phase1_system_check.py
   scripts/phase1_motor_test.py
   scripts/phase1_sensor_test.py
   scripts/phase1_integration_test.py
-  scripts/phase1_calibration.py
+  scripts/phase1_calibration. py
   scripts/phase1_quick_test.py
   scripts/phase1_record_baseline.py
   scripts/phase1_health_monitor.py
+  # Phase 2 scripts
+  scripts/phase2_tf_check.py
+  scripts/phase2_transform_test.py
+  # Phase 3 scripts
+  scripts/phase3_ekf_check.py
+  scripts/phase3_fusion_test.py
+  scripts/phase3_odom_test.py
+  scripts/phase3_integration_test.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
