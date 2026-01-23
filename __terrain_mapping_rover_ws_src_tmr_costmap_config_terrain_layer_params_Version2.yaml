@@ -1,0 +1,103 @@
+# =============================================================================
+# ToF Terrain Layer Parameters
+# =============================================================================
+#
+# Detailed configuration for the custom ToF terrain classification layer.
+#
+# =============================================================================
+
+# =============================================================================
+# Terrain Classification Thresholds
+# =============================================================================
+# These thresholds determine how terrain is classified based on height,
+# slope, and roughness.
+
+terrain_classification:
+  # Height thresholds (meters, relative to estimated ground)
+  # Objects above these heights are assigned corresponding costs
+  ground_height_tolerance: 0.05   # Tolerance for ground plane detection
+  low_obstacle_height: 0.08       # Low obstacles (small rocks, debris)
+  medium_obstacle_height: 0.15    # Medium obstacles
+  high_obstacle_height: 0.25      # High obstacles (significant rocks)
+  lethal_obstacle_height: 0.40    # Lethal obstacles (non-traversable)
+  
+  # Negative height (pits/holes)
+  min_traversable_depth: -0.10    # Maximum depth of traversable depression
+  lethal_depth: -0.20             # Depth that is non-traversable
+  
+  # Slope thresholds (degrees)
+  max_traversable_slope: 15.0     # Maximum slope for free traversal
+  caution_slope: 25.0             # Slope requiring reduced speed
+  max_slope: 35.0                 # Maximum traversable slope
+  
+  # Roughness thresholds (standard deviation of heights in cell)
+  smooth_threshold: 0.02          # Smooth terrain
+  rough_threshold: 0.05           # Rough terrain
+  very_rough_threshold: 0.10      # Very rough terrain
+
+# =============================================================================
+# Cost Values
+# =============================================================================
+# Nav2 cost values: 0 = free, 253 = inscribed, 254 = lethal, 255 = unknown
+
+cost_values:
+  free_space: 0
+  low_cost: 50
+  medium_cost: 128
+  high_cost: 200
+  lethal: 254
+  unknown: 255
+
+# =============================================================================
+# Point Cloud Processing
+# =============================================================================
+
+point_cloud_processing:
+  # Voxel grid downsampling
+  enable_voxel_filter: true
+  voxel_size: 0.02                # meters
+  
+  # Range filtering
+  min_range: 0.15                 # Minimum distance from sensor (m)
+  max_range: 4.0                  # Maximum distance from sensor (m)
+  
+  # Height filtering (relative to base_link)
+  min_height: -0.5                # Below this is filtered out
+  max_height: 1.5                 # Above this is filtered out
+  
+  # Outlier removal
+  enable_outlier_removal: true
+  outlier_mean_k: 10              # Points to analyze
+  outlier_std_thresh: 1.0         # Standard deviation threshold
+
+# =============================================================================
+# Grid Parameters
+# =============================================================================
+
+grid:
+  cell_resolution: 0.05           # Grid cell size (meters)
+  min_points_per_cell: 3          # Minimum points for valid classification
+  
+# =============================================================================
+# Temporal Parameters
+# =============================================================================
+
+temporal:
+  observation_persistence: 1.0    # How long observations persist (seconds)
+  update_frequency: 10.0          # Layer update rate (Hz)
+
+# =============================================================================
+# Visualization
+# =============================================================================
+
+visualization:
+  publish_visualization: true
+  visualization_topic: "terrain_layer/visualization"
+  
+  # Colors (RGBA) for each terrain class
+  colors:
+    free: [0.0, 1.0, 0.0, 0.7]
+    low_cost: [0.5, 1.0, 0.0, 0.7]
+    medium_cost: [1.0, 1.0, 0.0, 0.7]
+    high_cost: [1.0, 0.5, 0.0, 0.7]
+    lethal: [1.0, 0.0, 0.0, 0.7]

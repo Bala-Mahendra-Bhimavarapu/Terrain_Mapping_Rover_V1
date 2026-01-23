@@ -1,0 +1,11 @@
+<library path="tof_terrain_layer">
+  <class name="tmr_costmap/ToFTerrainLayer" 
+         type="tmr_costmap::ToFTerrainLayer" 
+         base_class_type="nav2_costmap_2d::Layer">
+    <description>
+      Custom costmap layer that processes ToF point cloud data to classify terrain
+      as traversable, high-cost, or non-traversable based on height and slope analysis.
+      Optimized for the Terrain Mapping Rover lunar terrain simulation.
+    </description>
+  </class>
+</library>

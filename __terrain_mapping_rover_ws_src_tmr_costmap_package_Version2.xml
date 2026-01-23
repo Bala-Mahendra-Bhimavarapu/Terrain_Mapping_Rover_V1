@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>tmr_costmap</name>
+  <version>1.0.0</version>
+  <description>Custom Nav2 costmap layer for ToF terrain classification on the Terrain Mapping Rover</description>
+  <maintainer email="user@todo.todo">Bala</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>ament_cmake_python</buildtool_depend>
+
+  <!-- Core ROS 2 -->
+  <depend>rclcpp</depend>
+  <depend>rclpy</depend>
+  <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>visualization_msgs</depend>
+
+  <!-- TF -->
+  <depend>tf2</depend>
+  <depend>tf2_ros</depend>
+  <depend>tf2_geometry_msgs</depend>
+  <depend>tf2_sensor_msgs</depend>
+
+  <!-- Nav2 -->
+  <depend>nav2_costmap_2d</depend>
+  <depend>nav2_core</depend>
+  <depend>nav2_util</depend>
+  <depend>nav2_msgs</depend>
+  <depend>nav2_bringup</depend>
+  <depend>nav2_bt_navigator</depend>
+  <depend>nav2_controller</depend>
+  <depend>nav2_planner</depend>
+  <depend>nav2_behaviors</depend>
+  <depend>nav2_lifecycle_manager</depend>
+
+  <!-- Point Cloud Processing -->
+  <depend>pcl_conversions</depend>
+  <depend>pcl_ros</depend>
+  <depend>laser_geometry</depend>
+
+  <!-- Pluginlib for costmap layers -->
+  <depend>pluginlib</depend>
+
+  <!-- Message filters for sync -->
+  <depend>message_filters</depend>
+
+  <!-- TMR packages -->
+  <depend>tmr_msgs</depend>
+
+  <!-- Launch -->
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+
+  <!-- Visualization -->
+  <exec_depend>rviz2</exec_depend>
+
+  <!-- Test dependencies -->
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+  <test_depend>ament_cmake_gtest</test_depend>
+  <test_depend>python3-pytest</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+    <!-- Register costmap plugin -->
+    <nav2_costmap_2d plugin="${prefix}/plugins/costmap_plugins.xml"/>
+  </export>
+</package>
