@@ -1,0 +1,6 @@
+# This directory stores saved SLAM maps
+# Files: 
+#   *.db   - RTAB-MAP database
+#   *.pgm  - 2D occupancy grid
+#   *.yaml - Map metadata
+#   *.pcd  - 3D point cloud

@@ -1,0 +1,151 @@
+# =============================================================================
+# RTAB-MAP Low-Texture Terrain Configuration
+# =============================================================================
+#
+# Optimized for lunar/moon-like terrain with minimal visual features.
+# Uses aggressive feature detection and relaxed matching thresholds.
+#
+# Key adaptations:
+# - GFTT detector with low quality threshold
+# - More features extracted
+# - Relaxed loop closure criteria
+# - Depth-assisted feature matching
+#
+# =============================================================================
+
+rtabmap:
+  ros__parameters:
+    # =========================================================================
+    # Inherit base configuration
+    # =========================================================================
+    
+    # Frame IDs (same as base)
+    frame_id: "base_link"
+    odom_frame_id: "odom"
+    map_frame_id: "map"
+    
+    # Topics (same as base)
+    subscribe_depth: true
+    subscribe_rgb: true
+    approx_sync: true
+    approx_sync_max_interval:  0.1  # More tolerance for low-texture
+    
+    # =========================================================================
+    # Low-Texture Feature Detection
+    # =========================================================================
+    
+    # Use GFTT + ORB - best for low texture
+    Vis/FeatureType: "8"  # GFTT/ORB
+    
+    # Extract MORE features (compensate for sparse texture)
+    Vis/MaxFeatures: "2000"
+    
+    # Lower quality threshold = more features detected
+    GFTT/QualityLevel: "0.0005"  # Very low threshold
+    
+    # Smaller minimum distance between features
+    GFTT/MinDistance: "3"
+    
+    # Larger block size for better detection in uniform areas
+    GFTT/BlockSize: "5"
+    
+    # =========================================================================
+    # Relaxed Matching Criteria
+    # =========================================================================
+    
+    # Lower minimum inliers (harder to match in low texture)
+    Vis/MinInliers: "10"
+    
+    # More RANSAC iterations
+    Vis/Iterations: "500"
+    
+    # Larger correspondence ratio
+    Vis/CorrespondenceRatio: "0.3"
+    
+    # Allow larger reprojection error
+    Vis/MaxDepthError: "0.2"  # 20cm depth error tolerance
+    
+    # =========================================================================
+    # Depth-Assisted Matching
+    # =========================================================================
+    
+    # Use depth for feature matching (crucial for low texture)
+    Vis/DepthAsMask: "true"
+    
+    # Depth range for features
+    Vis/MinDepth: "0.15"
+    Vis/MaxDepth: "3.5"  # ToF range
+    
+    # Bundle adjustment with depth constraints
+    Vis/BundleAdjustment: "1"
+    
+    # =========================================================================
+    # Loop Closure for Low Texture
+    # =========================================================================
+    
+    # Lower loop closure threshold (accept more potential matches)
+    Rtabmap/LoopThr: "0.08"
+    
+    # Higher retrieval threshold
+    Rtabmap/RetrievalThr:  "0.6"
+    
+    # Proximity detection more important for low texture
+    RGBD/ProximityBySpace: "true"
+    RGBD/ProximityPathMaxNeighbors: "10"
+    
+    # =========================================================================
+    # Memory Management for Dense Feature Storage
+    # =========================================================================
+    
+    # Larger working memory
+    Mem/STMSize: "50"
+    
+    # Lower rehearsal similarity (keep more diverse nodes)
+    Mem/RehearsalSimilarity: "0.5"
+    
+    # Keep more descriptors
+    Mem/RawDescriptorsKept: "true"
+    
+    # =========================================================================
+    # Additional ORB Parameters for Low Texture
+    # =========================================================================
+    
+    # More scale levels for multi-scale detection
+    ORB/NLevels: "12"
+    
+    # Smaller scale factor for finer pyramid
+    ORB/ScaleFactor: "1.15"
+    
+    # Larger patch size for more context
+    ORB/PatchSize: "41"
+    
+    # =========================================================================
+    # Robust Estimation
+    # =========================================================================
+    
+    # Use robust kernels for outlier rejection
+    Optimizer/Robust: "true"
+    
+    # Huber delta for robust optimization
+    Optimizer/VarianceIgnored: "false"
+    
+    # =========================================================================
+    # Grid Map for Sparse Environments
+    # =========================================================================
+    
+    # Larger cell size for smoother map
+    Grid/CellSize:  "0.075"
+    
+    # More aggressive raytracing
+    Grid/RayTracing: "true"
+    Grid/RangeMax: "4.0"
+    
+    # =========================================================================
+    # 3D Point Cloud
+    # =========================================================================
+    
+    # Larger voxel size to reduce noise
+    Grid/3D/VoxelSize: "0.08"
+    
+    # Normal estimation radius
+    Grid/NormalsK: "20"

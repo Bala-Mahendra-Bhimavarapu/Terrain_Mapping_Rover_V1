@@ -1,0 +1,70 @@
+# =============================================================================
+# RTAB-MAP Indoor Testing Configuration
+# =============================================================================
+#
+# Configuration for testing in indoor environments with more features.
+# Use this for initial testing before lunar terrain simulation.
+#
+# =============================================================================
+
+rtabmap: 
+  ros__parameters:
+    # Frame IDs
+    frame_id:  "base_link"
+    odom_frame_id: "odom"
+    map_frame_id: "map"
+    
+    # Topics
+    subscribe_depth: true
+    subscribe_rgb:  true
+    approx_sync:  true
+    approx_sync_max_interval: 0.05
+    
+    # =========================================================================
+    # Standard Feature Detection (good for indoor)
+    # =========================================================================
+    
+    Vis/FeatureType: "6"  # GFTT/BRIEF - fast for indoor
+    Vis/MaxFeatures: "1000"
+    
+    GFTT/QualityLevel: "0.01"
+    GFTT/MinDistance: "7"
+    
+    # =========================================================================
+    # Standard Matching
+    # =========================================================================
+    
+    Vis/MinInliers: "20"
+    Vis/Iterations: "300"
+    
+    Vis/MinDepth: "0.2"
+    Vis/MaxDepth: "4.0"
+    
+    # =========================================================================
+    # Loop Closure
+    # =========================================================================
+    
+    Rtabmap/LoopThr: "0.11"
+    Rtabmap/RetrievalThr: "0.7"
+    
+    RGBD/ProximityBySpace: "true"
+    
+    # =========================================================================
+    # Memory
+    # =========================================================================
+    
+    Mem/STMSize:  "30"
+    Mem/RehearsalSimilarity: "0.6"
+    
+    # =========================================================================
+    # Grid Map
+    # =========================================================================
+    
+    Grid/CellSize: "0.05"
+    Grid/RayTracing: "true"
+    
+    # =========================================================================
+    # Performance (indoor = faster)
+    # =========================================================================
+    
+    Rtabmap/DetectionRate: "2.0"  # 2 Hz max

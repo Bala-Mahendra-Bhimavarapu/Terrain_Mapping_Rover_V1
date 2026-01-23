@@ -1,0 +1,227 @@
+# =============================================================================
+# RTAB-MAP Configuration for Terrain Mapping Rover
+# =============================================================================
+#
+# Main configuration for RTAB-MAP SLAM optimized for the TMR project. 
+# This config is tuned for RGB-D SLAM using IMX500 camera + Arducam ToF. 
+#
+# Reference:  https://github.com/introlab/rtabmap_ros
+#
+# =============================================================================
+
+# =============================================================================
+# RTAB-MAP Node Configuration
+# =============================================================================
+rtabmap: 
+  ros__parameters:
+    # =========================================================================
+    # Frame Configuration
+    # =========================================================================
+    frame_id: "base_link"
+    odom_frame_id: "odom"
+    map_frame_id: "map"
+    
+    # Ground truth frame (empty if not available)
+    ground_truth_frame_id: ""
+    ground_truth_base_frame_id: ""
+    
+    # =========================================================================
+    # Topic Configuration
+    # =========================================================================
+    
+    # Subscribe to these topics
+    subscribe_depth:  true
+    subscribe_rgb: true
+    subscribe_scan:  false
+    subscribe_scan_cloud: false
+    subscribe_stereo:  false
+    subscribe_odom_info: false
+    subscribe_user_data: false
+    
+    # Approximate sync (set true if timestamps don't match exactly)
+    approx_sync: true
+    approx_sync_max_interval: 0.05  # 50ms tolerance
+    
+    # Queue sizes
+    queue_size:  10
+    qos:  1  # 0=system default, 1=reliable, 2=best effort
+    qos_image:  2  # Best effort for images
+    qos_camera_info: 1
+    qos_odom: 1
+    
+    # =========================================================================
+    # SLAM Settings
+    # =========================================================================
+    
+    # Database path (empty = memory only, set path to persist)
+    database_path: ""
+    
+    # Delete database on start (useful for testing)
+    # Set to false to continue mapping from previous session
+    delete_db_on_start: true
+    
+    # SLAM vs Localization mode
+    # true = SLAM (mapping + localization)
+    # false = localization only (requires existing map)
+    slam: true
+    
+    # =========================================================================
+    # Visual Odometry (disabled - using wheel odom + IMU from EKF)
+    # =========================================================================
+    
+    # We use external odometry from EKF, so disable visual odom
+    odom_sensor_sync: false
+    visual_odometry: false
+    
+    # =========================================================================
+    # TF Publishing
+    # =========================================================================
+    
+    # Publish map -> odom transform
+    publish_tf: true
+    
+    # TF delay for sync
+    tf_delay: 0.05
+    
+    # Wait for transform timeout
+    wait_for_transform:  0.2
+    
+    # =========================================================================
+    # Output Topics
+    # =========================================================================
+    
+    # Publish 2D occupancy grid map
+    grid_map: true
+    
+    # Publish 3D point cloud map
+    cloud_map: true
+    
+    # Map publishing rate (Hz, 0 = on update only)
+    map_publish_rate: 1.0
+    
+    # =========================================================================
+    # RTAB-MAP Core Parameters
+    # =========================================================================
+    
+    # --- Memory Management ---
+    
+    # Maximum nodes in Working Memory (0 = unlimited)
+    Mem/STMSize: "30"
+    
+    # Rehearsal similarity threshold
+    Mem/RehearsalSimilarity: "0.6"
+    
+    # Image decimation for feature extraction
+    Mem/ImageDecimation: "1"
+    
+    # Keep raw sensor data in memory
+    Mem/RawDescriptorsKept: "true"
+    
+    # --- Loop Closure Detection ---
+    
+    # Minimum inliers for loop closure
+    Vis/MinInliers: "15"
+    
+    # RANSAC iterations
+    Vis/Iterations: "300"
+    
+    # Feature type:  0=SURF, 1=SIFT, 2=ORB, 3=FAST/FREAK, 4=FAST/BRIEF
+    # 6=GFTT/BRIEF, 7=GFTT/FREAK, 8=GFTT/ORB, 9=BRISK, 10=KAZE
+    # ORB is good balance of speed and accuracy
+    Vis/FeatureType: "8"  # GFTT/ORB - good for low texture
+    
+    # Maximum features per image
+    Vis/MaxFeatures: "1000"
+    
+    # Minimum depth for features (meters)
+    Vis/MinDepth: "0.1"
+    
+    # Maximum depth for features (meters)
+    Vis/MaxDepth: "4.0"
+    
+    # --- GFTT (Good Features to Track) Parameters ---
+    # Good for low-texture environments
+    
+    GFTT/MinDistance: "5"
+    GFTT/QualityLevel: "0.001"  # Lower = more features
+    GFTT/BlockSize: "3"
+    GFTT/UseHarrisDetector: "false"
+    GFTT/K:  "0.04"
+    
+    # --- ORB Descriptor Parameters ---
+    
+    ORB/ScaleFactor: "1.2"
+    ORB/NLevels: "8"
+    ORB/EdgeThreshold: "19"
+    ORB/FirstLevel: "0"
+    ORB/WTA_K: "2"
+    ORB/PatchSize: "31"
+    
+    # --- Loop Closure Constraints ---
+    
+    # Hypothesis threshold for loop closure acceptance
+    Rtabmap/LoopThr: "0.11"
+    
+    # Retrieval threshold
+    Rtabmap/RetrievalThr: "0.7"
+    
+    # Time threshold for loop closure (seconds)
+    Rtabmap/TimeThr: "0"
+    
+    # Maximum loop closure distance (0 = unlimited)
+    RGBD/MaxLoopClosureDistance: "0"
+    
+    # --- Odometry Constraints ---
+    
+    # Use odometry as constraint between nodes
+    RGBD/ProximityBySpace: "true"
+    
+    # Maximum odometry covariance accepted
+    RGBD/ProximityMaxGraphDepth: "50"
+    
+    # --- Graph Optimization ---
+    
+    # Optimizer: 0=TORO, 1=g2o, 2=GTSAM, 3=Ceres
+    Optimizer/Strategy: "2"  # GTSAM if available, else g2o
+    
+    # Optimize from last node
+    Optimizer/GravitySigma: "0"
+    
+    # Robust estimation
+    Optimizer/Robust: "true"
+    
+    # --- Registration ---
+    
+    # ICP registration:  0=none, 1=ICP, 2=ICP with normals
+    Reg/Strategy: "0"  # Visual only
+    
+    # Minimum registration inliers
+    Reg/MinInliers: "15"
+    
+    # --- Grid Map Parameters ---
+    
+    # Grid cell size (meters)
+    Grid/CellSize: "0.05"
+    
+    # Range for 2D grid map (meters)
+    Grid/MaxGroundHeight: "0.1"
+    Grid/MaxObstacleHeight: "1.5"
+    Grid/MinClusterSize: "10"
+    
+    # Raytracing for clearing
+    Grid/RayTracing:  "true"
+    
+    # --- 3D Map Parameters ---
+    
+    # Voxel size for point cloud (0 = no voxel grid filter)
+    Grid/3D/VoxelSize: "0.05"
+    
+    # --- Odometry Update ---
+    
+    # Minimum distance to create new node (meters)
+    Rtabmap/DetectionRate: "2.0"  # Max 2 Hz
+    
+    # --- Database ---
+    
+    # Compress images in database
+    Db/CompressionLevel: "1"

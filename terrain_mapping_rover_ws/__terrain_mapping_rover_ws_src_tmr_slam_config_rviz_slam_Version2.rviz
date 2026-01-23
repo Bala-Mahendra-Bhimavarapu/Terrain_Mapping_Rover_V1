@@ -1,0 +1,150 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+  - Class: rviz_common/Selection
+    Name: Selection
+  - Class: rviz_common/Tool Properties
+    Name: Tool Properties
+  - Class:  rviz_common/Views
+    Name: Views
+
+Visualization Manager:
+  Class:  ""
+  Displays:
+    # TF Display
+    - Class: rviz_default_plugins/TF
+      Name: TF
+      Enabled: true
+      Frame Timeout:  15
+      Frames:
+        All Enabled: false
+        map: 
+          Value: true
+        odom:
+          Value: true
+        base_link:
+          Value: true
+        base_footprint:
+          Value:  true
+        camera_link:
+          Value: true
+        tof_link:
+          Value: true
+      Marker Scale: 0.5
+      Show Arrows: true
+      Show Axes: true
+      Show Names:  true
+      Update Interval: 0
+
+    # Robot Model
+    - Class: rviz_default_plugins/RobotModel
+      Name: RobotModel
+      Enabled: true
+      Description Topic: 
+        Value: /robot_description
+      Alpha: 1
+
+    # 2D Map
+    - Class: rviz_default_plugins/Map
+      Name: Map
+      Enabled:  true
+      Topic:
+        Value: /map
+      Alpha: 0.7
+      Color Scheme:  map
+      Draw Behind: true
+
+    # 3D Point Cloud Map
+    - Class: rviz_default_plugins/PointCloud2
+      Name: CloudMap
+      Enabled: true
+      Topic:
+        Value: /rtabmap/cloud_map
+      Size (m): 0.02
+      Color Transformer: RGB8
+      Style:  Points
+      Alpha: 1
+
+    # Current RGB Image
+    - Class: rviz_default_plugins/Image
+      Name: RGB Image
+      Enabled: true
+      Topic:
+        Value: /camera/image_raw
+      Queue Size: 1
+
+    # Current Depth Image
+    - Class: rviz_default_plugins/Image
+      Name:  Depth Image
+      Enabled:  true
+      Topic:
+        Value: /tof/depth/image_raw
+      Queue Size:  1
+
+    # Odometry
+    - Class: rviz_default_plugins/Odometry
+      Name: Odometry
+      Enabled: true
+      Topic:
+        Value: /odometry/filtered
+      Position Tolerance: 0.1
+      Angle Tolerance: 0.1
+      Keep: 100
+      Covariance:
+        Value: true
+
+    # RTAB-MAP Info
+    - Class: rviz_default_plugins/MarkerArray
+      Name:  RTABMAP Labels
+      Enabled: true
+      Topic:
+        Value: /rtabmap/labels
+
+    # Loop Closure Links
+    - Class: rviz_default_plugins/MarkerArray
+      Name: Loop Closures
+      Enabled: true
+      Topic:
+        Value: /rtabmap/mapGraph
+
+  Global Options:
+    Background Color: 48; 48; 48
+    Fixed Frame: map
+    Frame Rate:  30
+
+  Tools:
+    - Class: rviz_default_plugins/Interact
+    - Class: rviz_default_plugins/MoveCamera
+    - Class: rviz_default_plugins/Select
+    - Class: rviz_default_plugins/FocusCamera
+    - Class: rviz_default_plugins/Measure
+    - Class: rviz_default_plugins/SetInitialPose
+      Topic:  /initialpose
+    - Class: rviz_default_plugins/SetGoal
+      Topic: /goal_pose
+
+  Views:
+    Current: 
+      Class: rviz_default_plugins/ThirdPersonFollower
+      Distance: 5
+      Enable Stereo Rendering:
+        Value: false
+      Focal Point:
+        X: 0
+        Y: 0
+        Z: 0
+      Focal Shape Fixed Size:  true
+      Focal Shape Size: 0.05
+      Invert Z Axis: false
+      Name: Current View
+      Near Clip Distance: 0.01
+      Pitch: 0.5
+      Target Frame: base_link
+      Value: ThirdPersonFollower
+      Yaw: 3.14
+
+Window Geometry:
+  Height: 1000
+  Width: 1600
+  X: 100
+  Y: 100
