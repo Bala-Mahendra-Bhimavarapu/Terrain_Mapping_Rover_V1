@@ -60,7 +60,7 @@ class TestIMU(unittest.TestCase):
     
     @classmethod
     def imu_callback(cls, msg):
-        cls.imu_data. append(msg)
+        cls.imu_data.append(msg)
     
     @classmethod
     def temp_callback(cls, msg):
@@ -77,10 +77,10 @@ class TestIMU(unittest.TestCase):
     def test_data_rate(self):
         """Test IMU data rate is acceptable."""
         if len(self.imu_data) < 10:
-            self. skipTest("Insufficient IMU data")
+            self.skipTest("Insufficient IMU data")
         
         # Should have at least 50 Hz
-        expected_samples = 5. 0 * 50  # 5 seconds at 50 Hz
+        expected_samples = 5.0 * 50  # 5 seconds at 50 Hz
         self.assertGreater(len(self.imu_data), expected_samples * 0.5,
                           f"Low IMU rate: {len(self.imu_data)} samples in 5s")
     
@@ -92,7 +92,7 @@ class TestIMU(unittest.TestCase):
         last = self.imu_data[-1]
         accel_magnitude = math.sqrt(
             last.linear_acceleration.x**2 +
-            last.linear_acceleration. y**2 +
+            last.linear_acceleration.y**2 +
             last.linear_acceleration.z**2
         )
         
@@ -108,7 +108,7 @@ class TestIMU(unittest.TestCase):
         # Average gyro readings
         avg_gx = sum(d.angular_velocity.x for d in self.imu_data) / len(self.imu_data)
         avg_gy = sum(d.angular_velocity.y for d in self.imu_data) / len(self.imu_data)
-        avg_gz = sum(d. angular_velocity.z for d in self.imu_data) / len(self.imu_data)
+        avg_gz = sum(d.angular_velocity.z for d in self.imu_data) / len(self.imu_data)
         
         gyro_magnitude = math.sqrt(avg_gx**2 + avg_gy**2 + avg_gz**2)
         
