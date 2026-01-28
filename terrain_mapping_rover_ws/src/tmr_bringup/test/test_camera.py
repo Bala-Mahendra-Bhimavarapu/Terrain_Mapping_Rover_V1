@@ -12,7 +12,7 @@ import rclpy
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, ReliabilityPolicy
 
-from sensor_msgs. msg import Image, CameraInfo
+from sensor_msgs.msg import Image, CameraInfo
 from std_msgs.msg import Bool
 
 
@@ -37,14 +37,14 @@ class TestCamera(unittest.TestCase):
         
         cls.connected_sub = cls.node.create_subscription(
             Bool, '/camera/connected', cls.connected_callback, 10)
-        cls.image_sub = cls.node. create_subscription(
+        cls.image_sub = cls.node.create_subscription(
             Image, '/camera/image_raw', cls.image_callback, qos)
         cls.info_sub = cls.node.create_subscription(
             CameraInfo, '/camera/camera_info', cls.info_callback, qos)
         
         # Collect data
         timeout = 5.0
-        start = time. time()
+        start = time.time()
         while time.time() - start < timeout:
             rclpy.spin_once(cls.node, timeout_sec=0.1)
     
@@ -80,22 +80,22 @@ class TestCamera(unittest.TestCase):
         if self.last_image is None:
             self.skipTest("No image received")
         
-        self.assertGreater(self.last_image. width, 0, "Invalid image width")
+        self.assertGreater(self.last_image.width, 0, "Invalid image width")
         self.assertGreater(self.last_image.height, 0, "Invalid image height")
     
     def test_image_encoding(self):
         """Test image encoding is valid."""
-        if self. last_image is None:
+        if self.last_image is None:
             self.skipTest("No image received")
         
         valid_encodings = ['bgr8', 'rgb8', 'mono8', 'yuv422']
         self.assertIn(self.last_image.encoding, valid_encodings,
-                     f"Invalid encoding: {self.last_image. encoding}")
+                     f"Invalid encoding: {self.last_image.encoding}")
     
     def test_image_data(self):
         """Test image has data."""
         if self.last_image is None:
-            self. skipTest("No image received")
+            self.skipTest("No image received")
         
         expected_size = self.last_image.height * self.last_image.step
         self.assertEqual(len(self.last_image.data), expected_size,
