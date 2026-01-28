@@ -57,10 +57,10 @@ class TestOdometry(unittest.TestCase):
             return (0.0, 0.0, 0.0)
         
         odom = self.odom_data[-1]
-        x = odom.pose.pose. position.x
+        x = odom.pose.pose.position.x
         y = odom.pose.pose.position. y
         
-        q = odom.pose.pose. orientation
+        q = odom.pose.pose.orientation
         yaw = math.atan2(2.0 * (q.w * q.z + q.x * q.y),
                         1.0 - 2.0 * (q.y * q.y + q.z * q.z))
         
@@ -73,7 +73,7 @@ class TestOdometry(unittest.TestCase):
         twist.angular.z = angular
         
         start = time.time()
-        while time. time() - start < duration: 
+        while time.time() - start < duration: 
             self.cmd_vel_pub.publish(twist)
             rclpy.spin_once(self.node, timeout_sec=0.05)
     
@@ -103,7 +103,7 @@ class TestOdometry(unittest.TestCase):
         
         # Check for NaN
         self.assertFalse(math.isnan(odom.pose.pose.position.x), "X is NaN")
-        self.assertFalse(math.isnan(odom.pose.pose. position.y), "Y is NaN")
+        self.assertFalse(math.isnan(odom.pose.pose.position.y), "Y is NaN")
         
         # Check quaternion is normalized
         q = odom.pose.pose.orientation
