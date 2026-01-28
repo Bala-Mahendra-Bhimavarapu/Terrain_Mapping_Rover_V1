@@ -48,7 +48,7 @@ class TestPhase2TF(unittest.TestCase):
         try:
             return self.tf_buffer.lookup_transform(
                 parent, child,
-                rclpy.time. Time(),
+                rclpy.time.Time(),
                 timeout=Duration(seconds=2.0)
             )
         except TransformException: 
@@ -105,16 +105,16 @@ class TestPhase2TF(unittest.TestCase):
         if transform is None:
             self.skipTest("Transform not available")
         
-        t = transform.transform. translation
+        t = transform.transform.translation
         r = transform.transform.rotation
         
         self.assertFalse(math.isnan(t.x), "Translation X is NaN")
         self.assertFalse(math.isnan(t.y), "Translation Y is NaN")
         self.assertFalse(math.isnan(t.z), "Translation Z is NaN")
-        self.assertFalse(math. isnan(r.x), "Rotation X is NaN")
+        self.assertFalse(math.isnan(r.x), "Rotation X is NaN")
         self.assertFalse(math.isnan(r.y), "Rotation Y is NaN")
         self.assertFalse(math.isnan(r.z), "Rotation Z is NaN")
-        self.assertFalse(math. isnan(r.w), "Rotation W is NaN")
+        self.assertFalse(math.isnan(r.w), "Rotation W is NaN")
     
     def test_quaternion_normalized(self):
         """Test quaternions are normalized."""
